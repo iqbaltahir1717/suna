@@ -141,11 +141,33 @@ then device QA.
 - ⬜ Backup/export of hafalan data (it lives only on this device until
   Phase 8 sync).
 
-## Phase 5 — Final design and animation ⬜ (can overlap)
+## Phase 5 — Final design and animation 🟡 (blocked on final design assets)
 
 Apply approved Figma UI progressively; replace placeholders and tokens; full
 mascot states with layered art; licensed SFX and optional mascot voice;
 accessibility and performance passes.
+
+- ✅ Figma checked (2026-10-24): no final frames, variables, or layered
+  mascot yet; only the wireframe, a raster Susun Ayat concept, a flattened
+  mascot pose sheet, and moodboard images. Inventory in DESIGN_HANDOFF.md.
+- ✅ Mascot loop pauses whenever its screen is covered (Home, play, and
+  results), in the background, and with reduced motion.
+- ✅ Accessibility: numbered ayah/slot badges and the ayah number field grow
+  with the OS font scale instead of clipping; results title is a header.
+- ⬜ Tokens and typography from approved Figma variables/styles.
+- ⬜ Shared components and screens restyled to final frames.
+- ⬜ App logo, app icon/splash, Susun Ayat banner, custom tab icons.
+- ⬜ Layered mascot export → blink, smile, wave, look left/right, happy and
+  encourage faces (layer list in DESIGN_HANDOFF.md). 3x re-export of the
+  current mascot.
+- ⬜ Designed, licensed SFX (and optional mascot sounds) from Iqbal; the
+  synthesized placeholders stay until then.
+- ⬜ Device QA: largest text size on small phones, VoiceOver/TalkBack focus
+  order on the hafalan editor, drag frame rate on a mid-range Android in a
+  release build.
+
+**Next concrete task:** export final frames (or confirm the green Susun Ayat
+concept as the direction) and the layered mascot, then apply tokens first.
 
 ## Phase 6 — Purchases ⬜
 

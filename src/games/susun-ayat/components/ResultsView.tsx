@@ -16,6 +16,7 @@ import { QuranText } from './QuranText';
 export function ResultsView({
   passage,
   hintsUsed,
+  paused = false,
   reduceMotion,
   onNext,
   onReplay,
@@ -24,6 +25,8 @@ export function ResultsView({
   /** The complete ayat of the level, in source order. */
   passage: { ayah: number; text: string }[];
   hintsUsed: number;
+  /** True while the host screen is covered; stops the mascot loop. */
+  paused?: boolean;
   reduceMotion: boolean;
   onNext?: () => void;
   onReplay: () => void;
@@ -40,9 +43,11 @@ export function ResultsView({
     <SafeAreaView edges={['bottom', 'left', 'right']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header} accessibilityLiveRegion="polite">
-          <MascotView ref={mascot} size={88} reduceMotion={reduceMotion} />
+          <MascotView ref={mascot} size={88} paused={paused} reduceMotion={reduceMotion} />
           <View style={styles.headerText}>
-            <AppText variant="title">{t('susunAyatPlay.results.title')}</AppText>
+            <AppText variant="title" accessibilityRole="header">
+              {t('susunAyatPlay.results.title')}
+            </AppText>
             <AppText variant="caption" color="textMuted">
               {hintsUsed > 0
                 ? t('susunAyatPlay.results.hintsUsed', { count: hintsUsed })
@@ -96,9 +101,11 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   headerText: { flex: 1, gap: spacing.xs },
   ayah: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  // min sizes, not fixed ones, so the number grows with the OS font scale.
   ayahNumber: {
-    width: 28,
-    height: 28,
+    minWidth: 28,
+    minHeight: 28,
+    paddingHorizontal: spacing.xs,
     borderRadius: radius.pill,
     backgroundColor: colors.primarySoft,
     alignItems: 'center',

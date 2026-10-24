@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useIsFocused, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -87,6 +87,8 @@ function PlayLevel({ levelId }: { levelId: string }) {
   const { t } = useTranslation();
   const router = useRouter();
   const { reduceMotion } = useSettings();
+  // Pause the mascot loop while another screen (e.g. premium info) covers this one.
+  const focused = useIsFocused();
   const { has } = useEntitlements();
   const { height: windowHeight } = useWindowDimensions();
   const session = usePlaySession(level);
@@ -225,6 +227,7 @@ function PlayLevel({ levelId }: { levelId: string }) {
         <ResultsView
           passage={passage}
           hintsUsed={puzzle.hintsUsed}
+          paused={!focused}
           reduceMotion={reduceMotion}
           onNext={next ? () => router.replace(`/games/susun-ayat/${next}`) : undefined}
           onReplay={restart}
@@ -299,7 +302,7 @@ function PlayLevel({ levelId }: { levelId: string }) {
       <View ref={rootRef} style={styles.root}>
         <ScrollView style={styles.board} contentContainerStyle={styles.boardContent}>
           <View style={styles.intro}>
-            <MascotView ref={mascot} size={56} reduceMotion={reduceMotion} />
+            <MascotView ref={mascot} size={56} paused={!focused} reduceMotion={reduceMotion} />
             <AppText color="textMuted" style={styles.introText}>
               {t(isWords ? 'susunAyatPlay.instructionsWords' : 'susunAyatPlay.instructions')}
             </AppText>

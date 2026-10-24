@@ -36,6 +36,7 @@ jest.mock('@/features/settings/SettingsProvider', () => ({
 }));
 jest.mock('expo-router', () => ({
   Stack: { Screen: () => null },
+  useIsFocused: () => true,
   useLocalSearchParams: () => ({ levelId: mockLevelId }),
   useRouter: () => ({ back: jest.fn(), replace: jest.fn(), push: jest.fn() }),
 }));

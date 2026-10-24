@@ -5,6 +5,25 @@ Figma file: `Suna-Games` (`cAAsdLTEgV0sgybvqgE3Kn`), Home wireframe node
 `docs/figma/home-wireframe-2003-324.png`. The wireframe is low-fidelity and
 structural; final UI is designed separately.
 
+## Figma inventory (checked 2026-10-24, Phase 5)
+
+Read through the Figma MCP server (read-only). Pages `MVP`, `Design`,
+`Draft`, and `Cover` are empty. `↳ Workspace` holds:
+
+| Node | What it is | Usable as |
+| --- | --- | --- |
+| `2003:324` "mock" | Low-fidelity Home wireframe (unchanged since Phase 0) | Structure only (already applied) |
+| `2003:328` "Frame 2" / `2001:309` "image 2" | Flattened raster concept of a Susun Ayat start screen: green palette, four-leaf logo, "Pilih Level" / "Pilih Surah" buttons, best scores Normal/Sulit, sound and settings buttons | Concept only. Not a layered frame: no variables, text styles, or components to extract |
+| `2003:321` / `2003:326` "image 5/6" | Flattened sheet of blue mascot poses (idle, sleepy, waving, rocket, glasses, etc.) | Pose reference only. Not layered; ownership/licence to be confirmed before shipping any pose |
+| `2001:311`, `2001:314` "image 3/4" | Moodboard screenshots of other games' characters | Inspiration only. Never ship these |
+
+There are no Figma variables (`get_variable_defs` on `2003:324` is empty),
+no final screen frames, and no layered mascot. So Phase 5 kept the
+low-fidelity UI and did **not** change tokens, components, or screens
+visually. Figma asset URLs are still unreachable from the cloud build
+environment; screenshots are only available at the node's natural size, so
+the mascot could not be re-exported at 3x from here.
+
 ## What the wireframe defines (and how it was mapped)
 
 | Wireframe | Implementation |
