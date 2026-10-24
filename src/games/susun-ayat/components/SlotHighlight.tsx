@@ -18,7 +18,7 @@ export function SlotHighlight({
 }) {
   const style = useAnimatedStyle(() => {
     const active = hover?.get() === index;
-    const scale = active && !reduceMotion ? 1.05 : 1;
+    const scale = active && !reduceMotion ? 1.02 : 1;
     return {
       backgroundColor: active ? colors.primarySoft : 'transparent',
       transform: [{ scale: reduceMotion ? scale : withTiming(scale, { duration: 120 }) }],

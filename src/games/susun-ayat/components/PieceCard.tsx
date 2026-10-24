@@ -2,14 +2,14 @@ import { useEffect, useRef, type ComponentRef } from 'react';
 import { Pressable, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
+  Easing,
+  FadeIn,
   LinearTransition,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withSequence,
-  withSpring,
   withTiming,
-  ZoomIn,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
@@ -20,6 +20,8 @@ import { resolveDropSlot } from './dropTargets';
 import { PieceFace, type PieceTone, type PieceVariant } from './PieceFace';
 
 export type { PieceTone } from './PieceFace';
+
+const smooth = Easing.out(Easing.quad);
 
 export interface CardFrame {
   x: number;
@@ -84,11 +86,10 @@ export function PieceCard({
     if (shakeKey === 0 || reduceMotion) return;
     shakeX.set(
       withSequence(
-        withTiming(-6, { duration: 50 }),
-        withTiming(6, { duration: 70 }),
-        withTiming(-4, { duration: 60 }),
-        withTiming(4, { duration: 60 }),
-        withTiming(0, { duration: 50 }),
+        withTiming(-4, { duration: 70, easing: smooth }),
+        withTiming(4, { duration: 90, easing: smooth }),
+        withTiming(-2, { duration: 80, easing: smooth }),
+        withTiming(0, { duration: 80, easing: smooth }),
       ),
     );
   }, [shakeKey, reduceMotion, shakeX]);
@@ -98,7 +99,10 @@ export function PieceCard({
     bounce.set(
       withDelay(
         celebrateDelay,
-        withSequence(withTiming(1.15, { duration: 140 }), withSpring(1, motion.snapSpring)),
+        withSequence(
+          withTiming(motion.celebrateScale, { duration: 160, easing: smooth }),
+          withTiming(1, { duration: 220, easing: smooth }),
+        ),
       ),
     );
   }, [celebrateDelay, reduceMotion, bounce]);
@@ -163,8 +167,12 @@ export function PieceCard({
 
   return (
     <Animated.View
-      entering={reduceMotion ? undefined : ZoomIn.springify().damping(14)}
-      layout={reduceMotion ? undefined : LinearTransition.springify().damping(18)}
+      // Short fades and eased reflow only: no springs or overshoot, so the
+      // bank stays calm while cards come and go.
+      entering={reduceMotion ? undefined : FadeIn.duration(motion.cardEnterMs)}
+      layout={
+        reduceMotion ? undefined : LinearTransition.duration(motion.cardReflowMs).easing(smooth)
+      }
     >
       <GestureDetector gesture={pan}>
         <Animated.View ref={viewRef} style={[animatedStyle, hidden && { opacity: 0.25 }]}>

@@ -84,9 +84,14 @@ export const motion = {
   pressFeedbackOpacity: 0.7,
   /** Finger travel (pt) before a card starts dragging; tiny, so drag feels immediate. */
   dragMinDistance: 4,
-  dragLiftScale: 1.08,
-  dragTiltDeg: -3,
-  snapSpring: { damping: 16, stiffness: 220 },
+  dragLiftScale: 1.04,
+  dragTiltDeg: -1,
+  /** Cards fade in and the bank reflows with short, eased timing (no springs). */
+  cardEnterMs: 160,
+  cardReflowMs: 200,
+  celebrateScale: 1.06,
+  /** Fly-back of a card dropped nowhere; critically damped, no bounce. */
+  snapSpring: { damping: 26, stiffness: 240 },
   /** Delay between cards when a solved answer bounces, one by one. */
   celebrateStaggerMs: 70,
   /** How long the celebration plays before the results screen. */
