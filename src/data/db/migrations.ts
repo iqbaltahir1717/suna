@@ -60,6 +60,40 @@ export const migrations: readonly Migration[] = [
       `);
     },
   },
+  {
+    version: 2,
+    description: 'Self-reported hafalan entries and their dated history',
+    up: async (db) => {
+      // Ayah upper bounds depend on the surah and are validated in the app
+      // against the Tanzil metadata (src/data/quran).
+      await db.execAsync(`
+        CREATE TABLE hafalan_entries (
+          id TEXT PRIMARY KEY NOT NULL,
+          surah INTEGER NOT NULL CHECK (surah BETWEEN 1 AND 114),
+          from_ayah INTEGER NOT NULL CHECK (from_ayah >= 1),
+          to_ayah INTEGER NOT NULL,
+          status TEXT NOT NULL CHECK (status IN ('learning', 'reviewing', 'memorized')),
+          note TEXT,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER NOT NULL,
+          status_changed_at INTEGER NOT NULL,
+          last_reviewed_at INTEGER,
+          CHECK (to_ayah >= from_ayah)
+        );
+        CREATE INDEX idx_hafalan_entries_surah ON hafalan_entries (surah, from_ayah);
+
+        CREATE TABLE hafalan_events (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          entry_id TEXT NOT NULL REFERENCES hafalan_entries (id) ON DELETE CASCADE,
+          kind TEXT NOT NULL
+            CHECK (kind IN ('created', 'status_changed', 'range_changed', 'reviewed')),
+          status TEXT NOT NULL CHECK (status IN ('learning', 'reviewing', 'memorized')),
+          at INTEGER NOT NULL
+        );
+        CREATE INDEX idx_hafalan_events_entry ON hafalan_events (entry_id, at);
+      `);
+    },
+  },
 ];
 
 export const LATEST_SCHEMA_VERSION = migrations.at(-1)?.version ?? 0;

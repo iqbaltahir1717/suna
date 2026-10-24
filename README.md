@@ -3,10 +3,11 @@
 Suna is an iOS and Android Quran-learning game hub for children and adults.
 Its first game is **Susun Ayat**, a verse-ordering puzzle.
 
-Current status: **Phase 3** (content and progression). Susun Ayat has 44
+Current status: **Phase 4** (hafalan tracker). Susun Ayat has 44
 challenges over 10 short surahs, in two modes (order ayat, order words) and
-four provisional difficulty levels. The Quran text, word segmentation, and
-challenge ranges still await qualified human review.
+four provisional difficulty levels. The premium hafalan tracker records
+self-reported statuses per ayah range for all 114 surahs. The Quran text,
+word segmentation, and challenge ranges still await qualified human review.
 See [ROADMAP.md](ROADMAP.md).
 
 | Doc | Purpose |
@@ -16,6 +17,7 @@ See [ROADMAP.md](ROADMAP.md).
 | [DATA_MODEL.md](DATA_MODEL.md) | Local entities, repositories, migrations |
 | [DESIGN_HANDOFF.md](DESIGN_HANDOFF.md) | Figma assets, mascot layers, pending art |
 | [CONTENT.md](CONTENT.md) | Quran text source, license, review checklist |
+| [docs/prompts/](docs/prompts/) | Ready-to-run prompts for the next phase (Claude Code) |
 
 ## Stack
 
@@ -104,6 +106,10 @@ On real iPhone and Android devices (not yet done, see ROADMAP):
    confirm "Selesai" badges and Home stats after a restart.
 7. In a dev build, use **Profil → Pratinjau entitlement** to preview
    locked/unlocked Hafalan. This panel does not exist in production bundles.
+8. Hafalan (with `hafalan_tracker` on): add a range from a long surah by
+   typing the ayah number, try an overlapping range (blocked with a reason),
+   change a status, log a review, delete an entry; confirm everything after a
+   restart and that playing Susun Ayat never changes hafalan.
 
 ## Project layout
 
@@ -113,7 +119,8 @@ src/
   components/          Shared flat UI components
   theme/               Design tokens (colors, type, spacing, radius, motion)
   locales/             id/en strings and i18n setup
-  data/                SQLite provider, migrations, repositories
+  data/                SQLite provider, migrations, repositories,
+                       quran/ (Tanzil surah names + ayah counts)
   features/            home, hafalan, statistics, profile, notifications,
                        mascot, purchases, settings
   games/

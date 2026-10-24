@@ -1,0 +1,587 @@
+{
+  "source": {
+    "name": "Tanzil Quran Text",
+    "textType": "Uthmani",
+    "version": "1.0.2",
+    "url": "https://tanzil.net",
+    "license": "Creative Commons Attribution 3.0 (verbatim copies only; changing the text is not allowed)",
+    "sourceFile": "quran-uthmani.xml",
+    "sourceFileMd5": "6aae945d556a1b28cfe682c0ea5ab518",
+    "sourceFileSha256": "bb2fe2b9e86b532228d7f74005080c1679c14aa2da6024fe30d29772f4f5b189",
+    "obtainedVia": "Verbatim file inside the PyPI package pyquran 1.0.1 (pyquran/QuranCorpus/quran-uthmani.xml); md5 matches the md5 file shipped beside it. tanzil.net was not reachable from the build environment.",
+    "copyrightBlock": "\r\n\r\n# PLEASE DO NOT REMOVE OR CHANGE THIS COPYRIGHT BLOCK\r\n#====================================================================\r\n#\r\n#  Tanzil Quran Text (Uthmani, version 1.0.2)\r\n#  Copyright (C) 2008-2010 Tanzil.net\r\n#  License: Creative Commons Attribution 3.0\r\n#\r\n#  This copy of quran text is carefully produced, highly \r\n#  verified and continuously monitored by a group of specialists \r\n#  at Tanzil project.\r\n#\r\n#  TERMS OF USE:\r\n#\r\n#  - Permission is granted to copy and distribute verbatim copies \r\n#    of this text, but CHANGING IT IS NOT ALLOWED.\r\n#\r\n#  - This quran text can be used in any website or application, \r\n#    provided its source (Tanzil.net) is clearly indicated, and \r\n#    a link is made to http://tanzil.net to enable users to keep\r\n#    track of changes.\r\n#\r\n#  - This copyright notice shall be included in all verbatim copies \r\n#    of the text, and shall be reproduced appropriately in all files \r\n#    derived from or containing substantial portion of this text.\r\n#\r\n#  Please check updates at: http://tanzil.net/updates/\r\n# \r\n#===================================================================="
+  },
+  "totalAyat": 6236,
+  "surahs": [
+    {
+      "surah": 1,
+      "nameArabic": "الفاتحة",
+      "ayahCount": 7
+    },
+    {
+      "surah": 2,
+      "nameArabic": "البقرة",
+      "ayahCount": 286
+    },
+    {
+      "surah": 3,
+      "nameArabic": "آل عمران",
+      "ayahCount": 200
+    },
+    {
+      "surah": 4,
+      "nameArabic": "النساء",
+      "ayahCount": 176
+    },
+    {
+      "surah": 5,
+      "nameArabic": "المائدة",
+      "ayahCount": 120
+    },
+    {
+      "surah": 6,
+      "nameArabic": "الأنعام",
+      "ayahCount": 165
+    },
+    {
+      "surah": 7,
+      "nameArabic": "الأعراف",
+      "ayahCount": 206
+    },
+    {
+      "surah": 8,
+      "nameArabic": "الأنفال",
+      "ayahCount": 75
+    },
+    {
+      "surah": 9,
+      "nameArabic": "التوبة",
+      "ayahCount": 129
+    },
+    {
+      "surah": 10,
+      "nameArabic": "يونس",
+      "ayahCount": 109
+    },
+    {
+      "surah": 11,
+      "nameArabic": "هود",
+      "ayahCount": 123
+    },
+    {
+      "surah": 12,
+      "nameArabic": "يوسف",
+      "ayahCount": 111
+    },
+    {
+      "surah": 13,
+      "nameArabic": "الرعد",
+      "ayahCount": 43
+    },
+    {
+      "surah": 14,
+      "nameArabic": "ابراهيم",
+      "ayahCount": 52
+    },
+    {
+      "surah": 15,
+      "nameArabic": "الحجر",
+      "ayahCount": 99
+    },
+    {
+      "surah": 16,
+      "nameArabic": "النحل",
+      "ayahCount": 128
+    },
+    {
+      "surah": 17,
+      "nameArabic": "الإسراء",
+      "ayahCount": 111
+    },
+    {
+      "surah": 18,
+      "nameArabic": "الكهف",
+      "ayahCount": 110
+    },
+    {
+      "surah": 19,
+      "nameArabic": "مريم",
+      "ayahCount": 98
+    },
+    {
+      "surah": 20,
+      "nameArabic": "طه",
+      "ayahCount": 135
+    },
+    {
+      "surah": 21,
+      "nameArabic": "الأنبياء",
+      "ayahCount": 112
+    },
+    {
+      "surah": 22,
+      "nameArabic": "الحج",
+      "ayahCount": 78
+    },
+    {
+      "surah": 23,
+      "nameArabic": "المؤمنون",
+      "ayahCount": 118
+    },
+    {
+      "surah": 24,
+      "nameArabic": "النور",
+      "ayahCount": 64
+    },
+    {
+      "surah": 25,
+      "nameArabic": "الفرقان",
+      "ayahCount": 77
+    },
+    {
+      "surah": 26,
+      "nameArabic": "الشعراء",
+      "ayahCount": 227
+    },
+    {
+      "surah": 27,
+      "nameArabic": "النمل",
+      "ayahCount": 93
+    },
+    {
+      "surah": 28,
+      "nameArabic": "القصص",
+      "ayahCount": 88
+    },
+    {
+      "surah": 29,
+      "nameArabic": "العنكبوت",
+      "ayahCount": 69
+    },
+    {
+      "surah": 30,
+      "nameArabic": "الروم",
+      "ayahCount": 60
+    },
+    {
+      "surah": 31,
+      "nameArabic": "لقمان",
+      "ayahCount": 34
+    },
+    {
+      "surah": 32,
+      "nameArabic": "السجدة",
+      "ayahCount": 30
+    },
+    {
+      "surah": 33,
+      "nameArabic": "الأحزاب",
+      "ayahCount": 73
+    },
+    {
+      "surah": 34,
+      "nameArabic": "سبإ",
+      "ayahCount": 54
+    },
+    {
+      "surah": 35,
+      "nameArabic": "فاطر",
+      "ayahCount": 45
+    },
+    {
+      "surah": 36,
+      "nameArabic": "يس",
+      "ayahCount": 83
+    },
+    {
+      "surah": 37,
+      "nameArabic": "الصافات",
+      "ayahCount": 182
+    },
+    {
+      "surah": 38,
+      "nameArabic": "ص",
+      "ayahCount": 88
+    },
+    {
+      "surah": 39,
+      "nameArabic": "الزمر",
+      "ayahCount": 75
+    },
+    {
+      "surah": 40,
+      "nameArabic": "غافر",
+      "ayahCount": 85
+    },
+    {
+      "surah": 41,
+      "nameArabic": "فصلت",
+      "ayahCount": 54
+    },
+    {
+      "surah": 42,
+      "nameArabic": "الشورى",
+      "ayahCount": 53
+    },
+    {
+      "surah": 43,
+      "nameArabic": "الزخرف",
+      "ayahCount": 89
+    },
+    {
+      "surah": 44,
+      "nameArabic": "الدخان",
+      "ayahCount": 59
+    },
+    {
+      "surah": 45,
+      "nameArabic": "الجاثية",
+      "ayahCount": 37
+    },
+    {
+      "surah": 46,
+      "nameArabic": "الأحقاف",
+      "ayahCount": 35
+    },
+    {
+      "surah": 47,
+      "nameArabic": "محمد",
+      "ayahCount": 38
+    },
+    {
+      "surah": 48,
+      "nameArabic": "الفتح",
+      "ayahCount": 29
+    },
+    {
+      "surah": 49,
+      "nameArabic": "الحجرات",
+      "ayahCount": 18
+    },
+    {
+      "surah": 50,
+      "nameArabic": "ق",
+      "ayahCount": 45
+    },
+    {
+      "surah": 51,
+      "nameArabic": "الذاريات",
+      "ayahCount": 60
+    },
+    {
+      "surah": 52,
+      "nameArabic": "الطور",
+      "ayahCount": 49
+    },
+    {
+      "surah": 53,
+      "nameArabic": "النجم",
+      "ayahCount": 62
+    },
+    {
+      "surah": 54,
+      "nameArabic": "القمر",
+      "ayahCount": 55
+    },
+    {
+      "surah": 55,
+      "nameArabic": "الرحمن",
+      "ayahCount": 78
+    },
+    {
+      "surah": 56,
+      "nameArabic": "الواقعة",
+      "ayahCount": 96
+    },
+    {
+      "surah": 57,
+      "nameArabic": "الحديد",
+      "ayahCount": 29
+    },
+    {
+      "surah": 58,
+      "nameArabic": "المجادلة",
+      "ayahCount": 22
+    },
+    {
+      "surah": 59,
+      "nameArabic": "الحشر",
+      "ayahCount": 24
+    },
+    {
+      "surah": 60,
+      "nameArabic": "الممتحنة",
+      "ayahCount": 13
+    },
+    {
+      "surah": 61,
+      "nameArabic": "الصف",
+      "ayahCount": 14
+    },
+    {
+      "surah": 62,
+      "nameArabic": "الجمعة",
+      "ayahCount": 11
+    },
+    {
+      "surah": 63,
+      "nameArabic": "المنافقون",
+      "ayahCount": 11
+    },
+    {
+      "surah": 64,
+      "nameArabic": "التغابن",
+      "ayahCount": 18
+    },
+    {
+      "surah": 65,
+      "nameArabic": "الطلاق",
+      "ayahCount": 12
+    },
+    {
+      "surah": 66,
+      "nameArabic": "التحريم",
+      "ayahCount": 12
+    },
+    {
+      "surah": 67,
+      "nameArabic": "الملك",
+      "ayahCount": 30
+    },
+    {
+      "surah": 68,
+      "nameArabic": "القلم",
+      "ayahCount": 52
+    },
+    {
+      "surah": 69,
+      "nameArabic": "الحاقة",
+      "ayahCount": 52
+    },
+    {
+      "surah": 70,
+      "nameArabic": "المعارج",
+      "ayahCount": 44
+    },
+    {
+      "surah": 71,
+      "nameArabic": "نوح",
+      "ayahCount": 28
+    },
+    {
+      "surah": 72,
+      "nameArabic": "الجن",
+      "ayahCount": 28
+    },
+    {
+      "surah": 73,
+      "nameArabic": "المزمل",
+      "ayahCount": 20
+    },
+    {
+      "surah": 74,
+      "nameArabic": "المدثر",
+      "ayahCount": 56
+    },
+    {
+      "surah": 75,
+      "nameArabic": "القيامة",
+      "ayahCount": 40
+    },
+    {
+      "surah": 76,
+      "nameArabic": "الانسان",
+      "ayahCount": 31
+    },
+    {
+      "surah": 77,
+      "nameArabic": "المرسلات",
+      "ayahCount": 50
+    },
+    {
+      "surah": 78,
+      "nameArabic": "النبإ",
+      "ayahCount": 40
+    },
+    {
+      "surah": 79,
+      "nameArabic": "النازعات",
+      "ayahCount": 46
+    },
+    {
+      "surah": 80,
+      "nameArabic": "عبس",
+      "ayahCount": 42
+    },
+    {
+      "surah": 81,
+      "nameArabic": "التكوير",
+      "ayahCount": 29
+    },
+    {
+      "surah": 82,
+      "nameArabic": "الإنفطار",
+      "ayahCount": 19
+    },
+    {
+      "surah": 83,
+      "nameArabic": "المطففين",
+      "ayahCount": 36
+    },
+    {
+      "surah": 84,
+      "nameArabic": "الإنشقاق",
+      "ayahCount": 25
+    },
+    {
+      "surah": 85,
+      "nameArabic": "البروج",
+      "ayahCount": 22
+    },
+    {
+      "surah": 86,
+      "nameArabic": "الطارق",
+      "ayahCount": 17
+    },
+    {
+      "surah": 87,
+      "nameArabic": "الأعلى",
+      "ayahCount": 19
+    },
+    {
+      "surah": 88,
+      "nameArabic": "الغاشية",
+      "ayahCount": 26
+    },
+    {
+      "surah": 89,
+      "nameArabic": "الفجر",
+      "ayahCount": 30
+    },
+    {
+      "surah": 90,
+      "nameArabic": "البلد",
+      "ayahCount": 20
+    },
+    {
+      "surah": 91,
+      "nameArabic": "الشمس",
+      "ayahCount": 15
+    },
+    {
+      "surah": 92,
+      "nameArabic": "الليل",
+      "ayahCount": 21
+    },
+    {
+      "surah": 93,
+      "nameArabic": "الضحى",
+      "ayahCount": 11
+    },
+    {
+      "surah": 94,
+      "nameArabic": "الشرح",
+      "ayahCount": 8
+    },
+    {
+      "surah": 95,
+      "nameArabic": "التين",
+      "ayahCount": 8
+    },
+    {
+      "surah": 96,
+      "nameArabic": "العلق",
+      "ayahCount": 19
+    },
+    {
+      "surah": 97,
+      "nameArabic": "القدر",
+      "ayahCount": 5
+    },
+    {
+      "surah": 98,
+      "nameArabic": "البينة",
+      "ayahCount": 8
+    },
+    {
+      "surah": 99,
+      "nameArabic": "الزلزلة",
+      "ayahCount": 8
+    },
+    {
+      "surah": 100,
+      "nameArabic": "العاديات",
+      "ayahCount": 11
+    },
+    {
+      "surah": 101,
+      "nameArabic": "القارعة",
+      "ayahCount": 11
+    },
+    {
+      "surah": 102,
+      "nameArabic": "التكاثر",
+      "ayahCount": 8
+    },
+    {
+      "surah": 103,
+      "nameArabic": "العصر",
+      "ayahCount": 3
+    },
+    {
+      "surah": 104,
+      "nameArabic": "الهمزة",
+      "ayahCount": 9
+    },
+    {
+      "surah": 105,
+      "nameArabic": "الفيل",
+      "ayahCount": 5
+    },
+    {
+      "surah": 106,
+      "nameArabic": "قريش",
+      "ayahCount": 4
+    },
+    {
+      "surah": 107,
+      "nameArabic": "الماعون",
+      "ayahCount": 7
+    },
+    {
+      "surah": 108,
+      "nameArabic": "الكوثر",
+      "ayahCount": 3
+    },
+    {
+      "surah": 109,
+      "nameArabic": "الكافرون",
+      "ayahCount": 6
+    },
+    {
+      "surah": 110,
+      "nameArabic": "النصر",
+      "ayahCount": 3
+    },
+    {
+      "surah": 111,
+      "nameArabic": "المسد",
+      "ayahCount": 5
+    },
+    {
+      "surah": 112,
+      "nameArabic": "الإخلاص",
+      "ayahCount": 4
+    },
+    {
+      "surah": 113,
+      "nameArabic": "الفلق",
+      "ayahCount": 5
+    },
+    {
+      "surah": 114,
+      "nameArabic": "الناس",
+      "ayahCount": 6
+    }
+  ]
+}

@@ -10,6 +10,7 @@ const tones = {
   primary: { bg: colors.primarySoft, fg: 'primary' },
   locked: { bg: colors.surfaceMuted, fg: 'locked' },
   dev: { bg: colors.devSoft, fg: 'dev' },
+  info: { bg: colors.infoSoft, fg: 'info' },
 } as const;
 
 export function Badge({

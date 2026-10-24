@@ -1,7 +1,10 @@
 import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite';
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 
+import type { HafalanRepository } from '@/features/hafalan/types';
+
 import { configureConnection, migrateDatabase } from './db/migrations';
+import { createHafalanRepository } from './repositories/hafalanRepository';
 import {
   createNotificationsRepository,
   type NotificationsRepository,
@@ -21,6 +24,7 @@ interface Repositories {
   settings: SettingsRepository;
   progress: ProgressRepository;
   notifications: NotificationsRepository;
+  hafalan: HafalanRepository;
 }
 
 const RepositoriesContext = createContext<Repositories | null>(null);
@@ -45,6 +49,7 @@ function RepositoriesProvider({ children }: { children: ReactNode }) {
       settings: createSettingsRepository(db),
       progress: createProgressRepository(db),
       notifications: createNotificationsRepository(db),
+      hafalan: createHafalanRepository(db),
     }),
     [db],
   );

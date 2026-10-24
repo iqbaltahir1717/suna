@@ -25,6 +25,8 @@ export const colors = {
   dangerSoft: '#FBE9E7',
   success: '#2F5E45',
   successSoft: '#DDE8DF',
+  info: '#1F4E79',
+  infoSoft: '#E3EEF8',
 } as const;
 
 /** Placeholder confetti colours for the completion celebration. */
