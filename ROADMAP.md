@@ -59,18 +59,57 @@ no push, no notification permission request.
   tanzil.net was blocked from the build environment.
 - ⬜ Device QA: Arabic shaping on iOS and Android, drag inside the scroll
   view, largest text size, small phones.
-- ⬜ Sound effects: no licensed SFX yet, so none play (Phase 5).
+- ✅ Sound effects: placeholder tones synthesized by `scripts/generate-sfx.py` (Phase 3 follow-up); designed SFX replace them in Phase 5.
 - ⬜ No auto-scroll while dragging; long challenges rely on tap-to-place.
 
-**Next concrete task:** get the content reviewed (CONTENT.md checklist),
-re-verify against the current tanzil.net release, and run the device QA list
-in README. Then start Phase 3 with word-ordering on the same engine.
+Phase 2 follow-ups (review, tanzil.net re-check, device QA) carry over into
+Phase 3 below.
 
-## Phase 3 — Content and progression ⬜
+## Phase 3 — Content and progression ✅ (pending content review and device QA)
 
-Word-ordering mode; four difficulty levels (Beginner/Medium/Hard/Expert,
-provisional labels); ~10 reviewed short surahs and ~40 curated challenges;
-replay/practice; real statistics.
+- ✅ Word-ordering mode (`orderWords`) on the same pure engine. Words are the
+  verbatim ayah split at spaces; identical words are interchangeable. Word
+  slots and chips flow right to left; multi-ayah puzzles show ayah breaks
+  except at Expert.
+- ✅ Four difficulty levels (Beginner/Medium/Hard/Expert, provisional labels)
+  defined in one table, `DIFFICULTY_RULES`: piece-count range, hints per
+  piece, ayah breaks. Difficulty is a filter independent of surah.
+- ✅ 10 short surahs (Al-Fatihah, An-Nas, Al-Falaq, Al-Ikhlas, An-Nasr,
+  Al-Kafirun, Al-Kautsar, Al-Ma‘un, Quraisy, Al-‘Asr) and 44 challenges
+  (16 order-ayat, 28 order-words; 18/14/6/6 by difficulty). Same Tanzil
+  Uthmani 1.0.2 source file as Phase 2; letters and word counts cross-checked
+  against two independent distributions.
+- ✅ Free introductory set decided: all challenges of Al-Fatihah, An-Nas,
+  and Al-Falaq (17). The other 27 need `susun_ayat_full`; the play route
+  checks access too, and the premium screen lists the current counts.
+- ✅ Replay on every card and result; random practice for the selected
+  difficulty that prefers unfinished challenges; "next" skips locked ones.
+- ✅ Real statistics on Statistik: completion by difficulty and mode,
+  attempts, finished attempts, solved without hints, active days, recent
+  attempts. Computed from `game_sessions`; no schema change (still v1).
+- ✅ Drag-first, playful play screen (after Iqbal's test): drag starts as
+  soon as the finger moves; a floating copy follows the finger above both
+  scroll areas; the slot under it lights up; loose drops snap to the nearest
+  empty slot; placed cards can be dragged to swap or back to the bank. The
+  answer is checked automatically when the board is full (no Check button).
+  Cards pop in, wrong cards shake, a solved board bounces card by card with
+  confetti, and the mascot reacts (happy / encourage). Short synthesized
+  SFX and light haptics follow the "Sound effects" setting. Reduced motion
+  turns the animation off. Tap-to-place remains for accessibility.
+- ✅ Phase 2 ids, ranges, and free access unchanged; `CONTENT_VERSION`
+  bumped to `2026.10-2`.
+- ⬜ **Qualified human review** of the new text, word segmentation, and all
+  44 ranges (CONTENT.md checklist). `CONTENT_REVIEW_STATUS = 'pending'`.
+- ⬜ Re-download from tanzil.net and diff (still blocked from the build
+  environment).
+- ⬜ Device QA for drag (iOS and Android): feel of immediate drag vs
+  scrolling the bank, haptics, SFX volume, confetti performance.
+- ⬜ Device QA for word chips: Arabic shaping of single words, RTL wrapping on
+  small phones, drag between wrapped rows, largest text size.
+- ⬜ Terminology review of the four difficulty labels.
+
+**Next concrete task:** content review of the 10 surahs and 44 challenges,
+then device QA. After that, Phase 4 (hafalan tracker).
 
 ## Phase 4 — Hafalan tracker ⬜
 
@@ -99,7 +138,8 @@ Premium package (provisional definition, `src/features/purchases/premiumPackage.
 - Includes: `hafalan_tracker`; `susun_ayat_full` = all Susun Ayat challenges
   outside the free introductory set, as listed in the in-app package contents.
 - Excludes: other future games, any guarantee of all Quran content, online
-  features. The free intro set size is decided in Phase 3.
+  features. Free intro set (Phase 3): every challenge of Al-Fatihah, An-Nas,
+  and Al-Falaq (`FREE_SURAHS`).
 
 ## Phase 7 — Release ⬜
 

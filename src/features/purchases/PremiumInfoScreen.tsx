@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText, Badge, Card, Icon, Screen, Section } from '@/components';
+import { accessSummary } from '@/games/susun-ayat/content';
 import { spacing } from '@/theme';
 
 import { useEntitlements } from './EntitlementsProvider';
@@ -26,6 +27,11 @@ export function PremiumInfoScreen() {
                 <AppText variant="caption" color="textMuted">
                   {t(`premium.features.${key}.body`)}
                 </AppText>
+                {key === 'susun_ayat_full' ? (
+                  <AppText variant="caption">
+                    {t('premium.susunAyatContents', accessSummary())}
+                  </AppText>
+                ) : null}
                 {has(key) ? <Badge label={t('premium.active')} tone="dev" /> : null}
               </View>
             </View>

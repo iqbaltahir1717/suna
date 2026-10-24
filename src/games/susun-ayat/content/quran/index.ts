@@ -1,4 +1,13 @@
 import alFatihah from './001-al-fatihah.tanzil-uthmani.json';
+import alAsr from './103-al-asr.tanzil-uthmani.json';
+import quraisy from './106-quraisy.tanzil-uthmani.json';
+import alMaun from './107-al-maun.tanzil-uthmani.json';
+import alKautsar from './108-al-kautsar.tanzil-uthmani.json';
+import alKafirun from './109-al-kafirun.tanzil-uthmani.json';
+import anNasr from './110-an-nasr.tanzil-uthmani.json';
+import alIkhlas from './112-al-ikhlas.tanzil-uthmani.json';
+import alFalaq from './113-al-falaq.tanzil-uthmani.json';
+import anNas from './114-an-nas.tanzil-uthmani.json';
 
 /**
  * Bundled Quran text. Every file here is produced by
@@ -26,11 +35,29 @@ export interface QuranSurahText {
 
 export const QURAN_TEXTS: Readonly<Record<number, QuranSurahText>> = {
   1: alFatihah,
+  103: alAsr,
+  106: quraisy,
+  107: alMaun,
+  108: alKautsar,
+  109: alKafirun,
+  110: anNasr,
+  112: alIkhlas,
+  113: alFalaq,
+  114: anNas,
 };
 
-/** Latin display names (UI text, not Quran text). */
+/** Latin display names (UI text, not Quran text), common Indonesian spelling. */
 export const SURAH_NAMES: Readonly<Record<number, string>> = {
   1: 'Al-Fatihah',
+  103: 'Al-‘Asr',
+  106: 'Quraisy',
+  107: 'Al-Ma‘un',
+  108: 'Al-Kautsar',
+  109: 'Al-Kafirun',
+  110: 'An-Nasr',
+  112: 'Al-Ikhlas',
+  113: 'Al-Falaq',
+  114: 'An-Nas',
 };
 
 export function getAyahText(surah: number, ayah: number): string {

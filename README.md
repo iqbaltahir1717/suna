@@ -3,8 +3,10 @@
 Suna is an iOS and Android Quran-learning game hub for children and adults.
 Its first game is **Susun Ayat**, a verse-ordering puzzle.
 
-Current status: **Phase 2** (first playable loop). Susun Ayat has five
-Al-Fatihah challenges; the Quran text still awaits qualified human review.
+Current status: **Phase 3** (content and progression). Susun Ayat has 44
+challenges over 10 short surahs, in two modes (order ayat, order words) and
+four provisional difficulty levels. The Quran text, word segmentation, and
+challenge ranges still await qualified human review.
 See [ROADMAP.md](ROADMAP.md).
 
 | Doc | Purpose |
@@ -48,7 +50,7 @@ npm run web       # browser preview (development aid only)
 The scripts use port **8082** so Suna can run next to another Expo project on
 the default 8081. Override with `npx expo start --port <port>` if needed.
 
-Phases 0–2 run in **Expo Go**: every native module used ships with Expo Go
+Phases 0–3 run in **Expo Go** (including `expo-audio` and `expo-haptics`): every native module used ships with Expo Go
 (the Amiri Quran font is a bundled asset loaded with expo-font).
 
 ### When a development build becomes necessary

@@ -34,8 +34,7 @@ const en: TranslationResources = {
     lastActivity: 'Last activity',
     never: 'None yet',
     emptyTitle: 'No activity yet',
-    emptyBody:
-      'These numbers fill in once you play. The first game, Susun Ayat, is being prepared.',
+    emptyBody: 'These numbers fill in once you play. Start with Susun Ayat below.',
   },
   games: {
     open: 'View',
@@ -46,16 +45,40 @@ const en: TranslationResources = {
     },
     susunAyat: {
       title: 'Susun Ayat',
-      description: 'Arrange Quran verse pieces into the correct order.',
+      description: 'Arrange Quran ayat and words into the correct order.',
     },
   },
   susunAyatEntry: {
     intro:
-      'Arrange complete ayat in the correct order. Tap a card to place it, or press and hold to drag. There is no timer.',
+      'Arrange whole ayat, or the words of an ayah, in the correct order. Drag cards into the answer boxes (or tap). There is no timer.',
     challengesTitle: 'Challenges',
     levelTitle: '{{surah}} · ayat {{from}}–{{to}}',
+    levelTitleWords: '{{surah}} · words of ayat {{from}}–{{to}}',
+    levelTitleWordsOne: '{{surah}} · words of ayah {{ayah}}',
     ayahCount: '{{count}} ayat',
+    wordCount_one: '{{count}} word',
+    wordCount_other: '{{count}} words',
     completed: 'Completed',
+    completedTimes_one: 'Completed',
+    completedTimes_other: 'Completed {{count}}×',
+    noHintsBadge: 'No hints',
+    mode: {
+      orderAyat: 'Order ayat',
+      orderWords: 'Order words',
+    },
+    difficultyTitle: 'Difficulty',
+    all: 'All',
+    difficultyRule: {
+      beginner: 'Beginner: 2–4 cards and the most hints. Labels are provisional.',
+      medium: 'Medium: 4–7 cards. Labels are provisional.',
+      hard: 'Hard: 8–12 words, fewer hints. Labels are provisional.',
+      expert:
+        'Expert: 13 or more words across several ayat, without ayah breaks. Labels are provisional.',
+    },
+    practiceTitle: 'Random practice',
+    practiceBody:
+      'Opens a random challenge for the selected difficulty, preferring ones you have not finished yet.',
+    practice: 'Start practice',
     play: 'Play',
     playAgain: 'Play again',
     locked: 'Locked (premium)',
@@ -75,19 +98,22 @@ const en: TranslationResources = {
     note: 'Completing a puzzle never marks an ayah as memorized automatically.',
   },
   susunAyatPlay: {
-    instructions: 'Arrange the ayat from top to bottom in their order.',
+    instructions: 'Drag the ayat into the boxes, top to bottom in their order.',
+    instructionsWords: 'Drag the words into the boxes, right to left as Arabic is read.',
+    lockedTitle: 'This challenge is part of premium',
+    lockedBody:
+      'The free introductory challenges stay open. Purchases are not available in this version.',
     slotLabel: 'Position {{number}}',
-    emptySlot: 'Tap a card below to fill',
+    emptySlot: 'Drag a card here',
     poolTitle: 'Ayah cards',
+    poolTitleWords: 'Word cards',
     poolEmpty: 'All cards are placed.',
-    check: 'Check',
     hint: 'Hint ({{count}})',
     noHints: 'No hints left',
     hintLocked: 'Locked by a hint',
     tryAgain: 'Almost! The marked cards are not in place yet. Try swapping them.',
-    fillAll: 'Fill every position first, then check.',
-    cardHintPool: 'Tap to place in the next empty position. Press and hold to drag.',
-    cardHintPlaced: 'Tap to return it to the cards. Press and hold to drag.',
+    cardHintPool: 'Drag into an answer box, or tap to fill the next empty one.',
+    cardHintPlaced: 'Drag to another box to swap, or tap to send it back.',
     wrongMark: 'Not yet',
     unknownLevel: 'Challenge not found.',
     results: {
@@ -129,6 +155,20 @@ const en: TranslationResources = {
     hafalanCaption:
       'Hafalan only changes when you record it yourself. Game scores never affect it.',
     hafalanEmpty: 'No hafalan records yet.',
+    susunAyat: {
+      completed: '{{completed}} of {{total}} challenges completed',
+      attempts: 'Attempts',
+      finished: 'Finished attempts',
+      noHints: 'Solved without hints',
+      activeDays: 'Active days',
+      byDifficulty: 'By difficulty',
+      byMode: 'By mode',
+      recent: 'Recent attempts',
+      recentEmpty: 'No attempts yet.',
+      removedLevel: 'Challenge no longer available',
+      statusDone: 'finished',
+      statusLeft: 'not finished',
+    },
   },
   profile: {
     localTitle: 'Local profile',
@@ -140,7 +180,8 @@ const en: TranslationResources = {
     languageId: 'Indonesia',
     languageEn: 'English',
     sound: 'Sound effects',
-    soundCaption: 'Short sounds for taps and completion are coming later. No background music.',
+    soundCaption:
+      'Short sounds and light vibration when moving cards and finishing a challenge. No background music.',
     reduceMotion: 'Reduce motion',
     reduceMotionCaption: 'Stop mascot animation and non-essential transitions.',
     reduceMotionSystem: 'On because of your device setting.',
@@ -160,6 +201,8 @@ const en: TranslationResources = {
       'Suna is free to play. The premium package is a one-time purchase that unlocks the following.',
     includesTitle: 'Includes',
     excludesTitle: 'Does not include',
+    susunAyatContents:
+      'Currently: {{premium}} premium challenges from {{premiumSurahs}} surahs. {{free}} introductory challenges stay free.',
     features: {
       hafalan_tracker: {
         title: 'Hafalan tracker',

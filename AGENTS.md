@@ -45,8 +45,15 @@ and do not build beyond it without instruction.
 - Level ids are permanent once shipped (progress rows key on them). Bump
   `CONTENT_VERSION` when levels or text change. Keep `CONTENT_REVIEW_STATUS`
   at `pending` until a qualified reviewer signs off (see CONTENT.md).
-- Validation compares card text, not card identity, so identical ayat are
-  interchangeable.
+- Validation compares card text, not card identity, so identical ayat or
+  words are interchangeable.
+- Word puzzles split the verbatim ayah at U+0020 only (`segmentAyah`); the
+  words joined with one space must equal the source text. Never normalize,
+  merge, or drop characters. Text with standalone pause marks is refused
+  until a reviewed rule exists.
+- Difficulty is defined once, in `DIFFICULTY_RULES` (`content/levels.ts`);
+  a test checks every level against it. The free introductory set is
+  `FREE_SURAHS`.
 
 ## Premium
 
@@ -76,6 +83,12 @@ and do not build beyond it without instruction.
 
 - Reanimated shared values only; no React state per frame.
 - Prefer transform and opacity. Use `.get()`/`.set()` on shared values.
+- Drag in Susun Ayat: one `DragController` per screen; the floating
+  `DragGhost` and slot highlight run on the UI thread from finger position
+  (`absoluteX/Y`); React renders only at drag start and drop. Tap-to-place
+  must keep working.
+- Sound and haptics go through `useGameFeedback`, which honours the sound
+  setting. Never add background music.
 - Pause when unfocused or backgrounded; clean up timers on unmount; honour OS
   and app reduced motion with a static fallback.
 - Do not fake facial animation by distorting a flattened image.

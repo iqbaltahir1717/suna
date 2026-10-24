@@ -7,7 +7,6 @@ import { AppText, Button, Card } from '@/components';
 import { MascotView, type MascotHandle } from '@/features/mascot/MascotView';
 import { colors, radius, spacing } from '@/theme';
 
-import type { LevelCard } from '../content';
 import { QuranText } from './QuranText';
 
 /**
@@ -15,14 +14,15 @@ import { QuranText } from './QuranText';
  * feedback, and next steps. Says nothing about memorization on purpose.
  */
 export function ResultsView({
-  cards,
+  passage,
   hintsUsed,
   reduceMotion,
   onNext,
   onReplay,
   onBack,
 }: {
-  cards: LevelCard[];
+  /** The complete ayat of the level, in source order. */
+  passage: { ayah: number; text: string }[];
   hintsUsed: number;
   reduceMotion: boolean;
   onNext?: () => void;
@@ -53,20 +53,20 @@ export function ResultsView({
 
         <AppText>{t('susunAyatPlay.results.body')}</AppText>
         <Card>
-          {cards.map((card) => (
-            <View key={card.id} style={styles.ayah}>
+          {passage.map((item) => (
+            <View key={item.ayah} style={styles.ayah}>
               <View
                 style={styles.ayahNumber}
                 accessibilityLabel={t('susunAyatPlay.results.ayahNumber', {
-                  number: card.ref.ayah,
+                  number: item.ayah,
                 })}
               >
                 <AppText variant="label" color="primary">
-                  {card.ref.ayah}
+                  {item.ayah}
                 </AppText>
               </View>
               <QuranText size="passage" style={styles.ayahText}>
-                {card.text}
+                {item.text}
               </QuranText>
             </View>
           ))}

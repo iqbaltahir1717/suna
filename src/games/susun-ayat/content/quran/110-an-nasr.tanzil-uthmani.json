@@ -1,0 +1,31 @@
+{
+  "source": {
+    "name": "Tanzil Quran Text",
+    "textType": "Uthmani",
+    "version": "1.0.2",
+    "url": "https://tanzil.net",
+    "license": "Creative Commons Attribution 3.0 (verbatim copies only; changing the text is not allowed)",
+    "sourceFile": "quran-uthmani.xml",
+    "sourceFileMd5": "6aae945d556a1b28cfe682c0ea5ab518",
+    "sourceFileSha256": "bb2fe2b9e86b532228d7f74005080c1679c14aa2da6024fe30d29772f4f5b189",
+    "obtainedVia": "Verbatim file inside the PyPI package pyquran 1.0.1 (pyquran/QuranCorpus/quran-uthmani.xml); md5 matches the md5 file shipped beside it. tanzil.net was not reachable from the build environment.",
+    "copyrightBlock": "\r\n\r\n# PLEASE DO NOT REMOVE OR CHANGE THIS COPYRIGHT BLOCK\r\n#====================================================================\r\n#\r\n#  Tanzil Quran Text (Uthmani, version 1.0.2)\r\n#  Copyright (C) 2008-2010 Tanzil.net\r\n#  License: Creative Commons Attribution 3.0\r\n#\r\n#  This copy of quran text is carefully produced, highly \r\n#  verified and continuously monitored by a group of specialists \r\n#  at Tanzil project.\r\n#\r\n#  TERMS OF USE:\r\n#\r\n#  - Permission is granted to copy and distribute verbatim copies \r\n#    of this text, but CHANGING IT IS NOT ALLOWED.\r\n#\r\n#  - This quran text can be used in any website or application, \r\n#    provided its source (Tanzil.net) is clearly indicated, and \r\n#    a link is made to http://tanzil.net to enable users to keep\r\n#    track of changes.\r\n#\r\n#  - This copyright notice shall be included in all verbatim copies \r\n#    of the text, and shall be reproduced appropriately in all files \r\n#    derived from or containing substantial portion of this text.\r\n#\r\n#  Please check updates at: http://tanzil.net/updates/\r\n# \r\n#===================================================================="
+  },
+  "surah": 110,
+  "surahNameArabic": "النصر",
+  "ayat": [
+    {
+      "ayah": 1,
+      "text": "إِذَا جَآءَ نَصْرُ ٱللَّهِ وَٱلْفَتْحُ"
+    },
+    {
+      "ayah": 2,
+      "text": "وَرَأَيْتَ ٱلنَّاسَ يَدْخُلُونَ فِى دِينِ ٱللَّهِ أَفْوَاجًا"
+    },
+    {
+      "ayah": 3,
+      "text": "فَسَبِّحْ بِحَمْدِ رَبِّكَ وَٱسْتَغْفِرْهُ إِنَّهُۥ كَانَ تَوَّابًۢا"
+    }
+  ],
+  "ayatSha256": "5987038f4bce4ed14097e7b3952bb3c1baabd44e7462d4fcca5da3f00782f562"
+}
