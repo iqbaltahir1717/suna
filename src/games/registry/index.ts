@@ -11,7 +11,7 @@ export const GAMES: readonly GameDefinition[] = [
     id: 'susun-ayat',
     titleKey: 'games.susunAyat.title',
     descriptionKey: 'games.susunAyat.description',
-    banner: null,
+    banner: require('../../../assets/brand/susun-ayat-banner.png'),
     route: '/games/susun-ayat',
     availability: 'available',
     // The intro set is free; premium levels inside the game check

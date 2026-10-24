@@ -40,7 +40,7 @@ export function ProfileScreen() {
       <Card>
         <View style={styles.profile}>
           <Image
-            source={require('../../../assets/mascot/companion-blue.png')}
+            source={require('../../../assets/brand/suna-logo.png')}
             style={styles.avatar}
             accessible={false}
           />

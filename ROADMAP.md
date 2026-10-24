@@ -141,11 +141,36 @@ then device QA.
 - ⬜ Backup/export of hafalan data (it lives only on this device until
   Phase 8 sync).
 
-## Phase 5 — Final design and animation ⬜ (can overlap)
+## Phase 5 — Final design and animation 🟡 (interim design applied; final design pending)
 
 Apply approved Figma UI progressively; replace placeholders and tokens; full
 mascot states with layered art; licensed SFX and optional mascot voice;
 accessibility and performance passes.
+
+- ✅ Figma checked (2026-10-24): no final frames, variables, or layered
+  mascot; inventory in DESIGN_HANDOFF.md.
+- ✅ Interim design by Claude at Iqbal's request (2026-10-24), from the
+  green Susun Ayat concept: tokens (palette, Nunito, radius, elevation),
+  restyled shared components, tab bar, Home welcome, Susun Ayat hero.
+  Contrast tested (WCAG AA).
+- ✅ Interim brand assets from SVG sources: Suna logo, app icon, Android
+  adaptive icon, splash, Susun Ayat mark and banner.
+- ✅ Layered vector mascot with blink, smile, glance left/right, wave,
+  happy and encourage faces, all on the UI thread.
+- ✅ Mascot pauses when its screen is covered, in the background, and with
+  reduced motion.
+- ✅ Accessibility: number badges and the ayah number field grow with the
+  OS font scale; results title is a header.
+- ⬜ Replace interim tokens/assets with the final Figma design when it
+  exists.
+- ⬜ Designed, licensed SFX (and optional mascot sounds) from Iqbal.
+- ⬜ Device QA: Nunito and SVG mascot on iOS/Android, splash and adaptive
+  icon in a development build, largest text size on small phones,
+  VoiceOver/TalkBack order on the hafalan editor, drag frame rate on a
+  mid-range Android release build.
+
+**Next concrete task:** Iqbal reviews the interim look on a device; then
+licensed SFX and device QA.
 
 ## Phase 6 — Purchases ⬜
 

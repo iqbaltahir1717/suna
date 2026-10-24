@@ -14,7 +14,14 @@ export function GameCard({ game }: { game: GameDefinition }) {
   return (
     <Card>
       {game.banner ? (
-        <Image source={game.banner} style={styles.banner} resizeMode="cover" accessible={false} />
+        <View style={styles.banner}>
+          <Image
+            source={game.banner}
+            style={StyleSheet.absoluteFill}
+            resizeMode="cover"
+            accessible={false}
+          />
+        </View>
       ) : (
         <View style={[styles.banner, styles.bannerPlaceholder]}>
           <Icon name="extension-puzzle-outline" size={36} color="textMuted" />
@@ -41,7 +48,7 @@ export function GameCard({ game }: { game: GameDefinition }) {
 }
 
 const styles = StyleSheet.create({
-  banner: { width: '100%', aspectRatio: 16 / 6, borderRadius: radius.md },
+  banner: { width: '100%', aspectRatio: 16 / 6, borderRadius: radius.md, overflow: 'hidden' },
   bannerPlaceholder: {
     backgroundColor: colors.placeholder,
     alignItems: 'center',

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 180">
+<rect width="480" height="180" fill="#DDE8DA"/>
+<circle cx="440" cy="10" r="70" fill="#FFFFFF" opacity="0.35"/><circle cx="30" cy="190" r="80" fill="#FFFFFF" opacity="0.3"/>
+<path fill="#2E5B44" d="M46.44 40 H79.56 Q86.0 40 86.0 46.44 V79.56 Q86.0 86.0 79.56 86.0 H46.44 Q40 86.0 40 79.56 V46.44 Q40 40 46.44 40 Z"/><path fill="#A9BFA2" d="M122.52 40 H133.56 Q140.0 40 140.0 46.44 V57.480000000000004 Q140.0 86.0 111.48 86.0 H100.44 Q94.0 86.0 94.0 79.56 V68.52 Q94.0 40 122.52 40 Z"/><path fill="#C9D6C3" d="M46.44 94.0 H57.480000000000004 Q86.0 94.0 86.0 122.52 V133.56 Q86.0 140.0 79.56 140.0 H68.52 Q40 140.0 40 111.48 V100.44 Q40 94.0 46.44 94.0 Z"/><path fill="#E7A272" d="M100.44 94.0 H133.56 Q140.0 94.0 140.0 100.44 V111.48 Q140.0 140.0 111.48 140.0 H100.44 Q94.0 140.0 94.0 133.56 V100.44 Q94.0 94.0 100.44 94.0 Z"/>
+<g transform="translate(140 54) scale(0.48)"><g stroke="#23493A" stroke-width="5" stroke-linejoin="round">
+<path d="M146 54 L160 39 Q166 35 166 43 L166 146 Q166 152 160 156 L146 164 Z" fill="#9DB393"/>
+<path d="M48 54 L62 40 Q66 36 72 36 L158 36 Q166 36 162 40 L148 54 Z" fill="#FBF8EE"/>
+<rect x="34" y="52" width="120" height="112" rx="18" fill="#BDCDAE"/></g>
+<g stroke="#EBA07E" stroke-width="2.8" stroke-linecap="round"><path d="M56 122 l4 -6 M62 122 l4 -6 M68 122 l4 -6"/><path d="M118 122 l4 -6 M124 122 l4 -6 M130 122 l4 -6"/></g>
+<g fill="#1E3B2F"><ellipse cx="66" cy="100" rx="8" ry="9"/><ellipse cx="122" cy="100" rx="8" ry="9"/></g>
+<circle cx="68.6" cy="96.8" r="2.6" fill="#fff"/><circle cx="124.6" cy="96.8" r="2.6" fill="#fff"/>
+<path d="M84 114 Q94 126 104 114" stroke="#1E3B2F" stroke-width="4.5" stroke-linecap="round" fill="none"/></g>
+<path fill="#2E5B44" d="M244 44 H288 Q300 44 300 56 V72 Q300 84 288 84 H244 Q232 84 232 72 V56 Q232 44 244 44 Z"/><path fill="#A9BFA2" d="M318 44 H386 Q398 44 398 56 V72 Q398 84 386 84 H318 Q306 84 306 72 V56 Q306 44 318 44 Z"/><path fill="#E7A272" d="M244 96 H324 Q336 96 336 108 V124 Q336 136 324 136 H244 Q232 136 232 124 V108 Q232 96 244 96 Z"/><path fill="#C9D6C3" d="M354 96 H386 Q398 96 398 108 V124 Q398 136 386 136 H354 Q342 136 342 124 V108 Q342 96 354 96 Z"/><rect x="404" y="96" width="44" height="40" rx="12" fill="none" stroke="#2E5B44" stroke-width="3" stroke-dasharray="7 6" opacity="0.5"/><rect x="404" y="44" width="44" height="40" rx="12" fill="none" stroke="#2E5B44" stroke-width="3" stroke-dasharray="7 6" opacity="0.5"/>
+</svg>

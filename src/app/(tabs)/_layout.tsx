@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 import type { ColorValue } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { colors } from '@/theme';
+import { colors, typography } from '@/theme';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -30,7 +30,8 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.border },
+        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        tabBarLabelStyle: { fontFamily: typography.label.fontFamily },
       }}
     >
       <Tabs.Screen

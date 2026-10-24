@@ -110,7 +110,8 @@ const styles = StyleSheet.create({
     ...typography.heading,
     flex: 1,
     minWidth: minTapTarget,
-    height: minTapTarget,
+    // Grows with the OS font scale instead of clipping the number.
+    minHeight: minTapTarget,
     textAlign: 'center',
     color: colors.text,
     borderRadius: radius.md,

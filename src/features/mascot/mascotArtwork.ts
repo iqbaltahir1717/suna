@@ -4,9 +4,8 @@ import type { ImageSourcePropType } from 'react-native';
  * Mascot artwork description. Swapping art means changing this file only;
  * the controller and MascotView adapt to what the artwork supports.
  *
- * Today only a flattened image exists in Figma (node 2003:386, 91×85), so
- * only whole-image motion is possible. A future `layered` variant (body,
- * eyes, mouths, arms with anchors) is described in DESIGN_HANDOFF.md.
+ * `layered` art (body, eyes, mouths, arms with pivots) supports facial and
+ * arm animation; `flattened` art (a single image) only whole-image motion.
  */
 export interface FlattenedMascotArtwork {
   kind: 'flattened';
@@ -16,31 +15,29 @@ export interface FlattenedMascotArtwork {
   height: number;
 }
 
-export type MascotArtwork = FlattenedMascotArtwork;
+export interface LayeredMascotArtwork {
+  kind: 'layered';
+  /** Artboard size shared by every layer (see sunaMascotLayers.tsx). */
+  width: number;
+  height: number;
+}
 
-export const SUNA_MASCOT: MascotArtwork = {
+export type MascotArtwork = FlattenedMascotArtwork | LayeredMascotArtwork;
+
+/** In-house vector redraw of the Figma mascot (node 2003:386), layered. */
+export const SUNA_MASCOT: MascotArtwork = { kind: 'layered', width: 200, height: 200 };
+
+/** The original flattened Figma render, kept as a fallback artwork. */
+export const SUNA_MASCOT_FLAT: MascotArtwork = {
   kind: 'flattened',
   source: require('../../../assets/mascot/suna-mascot.png'),
   width: 91,
   height: 85,
 };
 
-/** Planned states (see DESIGN_HANDOFF.md). Not all are implemented. */
-export type MascotState =
-  | 'idle'
-  | 'blink'
-  | 'smile'
-  | 'wave'
-  | 'lookLeft'
-  | 'lookRight'
-  | 'sniff'
-  | 'sleepy'
-  | 'sleeping'
-  | 'happy'
-  | 'encourage';
-
-/** Reactions that work with the current flattened artwork. */
-/** Implemented reactions. `happy` and `encourage` are whole-image motion only. */
+/**
+ * Reactions hosts can trigger. With layered art each has its own face and
+ * arm motion; with flattened art they fall back to whole-image motion.
+ * Idle (breathing, blinking, looking left/right, sway) runs on its own.
+ */
 export type MascotReaction = 'greet' | 'tap' | 'encourage' | 'happy';
-
-export const IMPLEMENTED_STATES: readonly MascotState[] = ['idle'];

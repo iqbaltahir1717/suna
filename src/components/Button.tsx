@@ -1,19 +1,25 @@
 import { Pressable, StyleSheet } from 'react-native';
 
-import { colors, minTapTarget, motion, radius, spacing } from '@/theme';
+import { borders, colors, minTapTarget, motion, radius, spacing } from '@/theme';
 
 import { AppText } from './AppText';
+import { Icon, type IconName } from './Icon';
 
 export function Button({
   label,
   onPress,
   variant = 'primary',
+  icon,
+  fullWidth = false,
   disabled = false,
   accessibilityHint,
 }: {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  /** primary: filled green; secondary: outlined; tonal: soft green fill. */
+  variant?: 'primary' | 'secondary' | 'tonal';
+  icon?: IconName;
+  fullWidth?: boolean;
   disabled?: boolean;
   accessibilityHint?: string;
 }) {
@@ -27,11 +33,14 @@ export function Button({
       accessibilityState={{ disabled }}
       style={({ pressed }) => [
         styles.base,
-        primary ? styles.primary : styles.secondary,
-        (pressed || disabled) && styles.pressed,
+        styles[variant],
+        fullWidth && styles.fullWidth,
+        pressed && (primary ? styles.primaryPressed : styles.pressed),
+        disabled && styles.disabled,
       ]}
     >
-      <AppText variant="heading" color={primary ? 'textInverse' : 'primary'}>
+      {icon ? <Icon name={icon} size={20} color={primary ? 'textInverse' : 'primary'} /> : null}
+      <AppText variant="heading" color={primary ? 'textInverse' : 'primary'} style={styles.label}>
         {label}
       </AppText>
     </Pressable>
@@ -40,15 +49,26 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: minTapTarget,
-    paddingHorizontal: spacing.lg,
+    minHeight: minTapTarget + 4,
+    paddingHorizontal: spacing.xl,
     paddingVertical: spacing.sm,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
     alignSelf: 'flex-start',
   },
+  fullWidth: { alignSelf: 'stretch' },
+  label: { textAlign: 'center', flexShrink: 1 },
   primary: { backgroundColor: colors.primary },
-  secondary: { backgroundColor: colors.primarySoft },
+  primaryPressed: { backgroundColor: colors.primaryPressed },
+  secondary: {
+    backgroundColor: colors.surface,
+    borderWidth: borders.thick,
+    borderColor: colors.primarySoft,
+  },
+  tonal: { backgroundColor: colors.primarySoft },
   pressed: { opacity: motion.pressFeedbackOpacity },
+  disabled: { opacity: 0.5 },
 });

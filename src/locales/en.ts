@@ -49,6 +49,11 @@ const en: TranslationResources = {
     },
   },
   susunAyatEntry: {
+    heroTitleFirst: 'Susun',
+    heroTitleSecond: 'Ayat',
+    tagline: 'Learn, arrange, and play.',
+    statCompleted: 'Challenges completed',
+    statNoHints: 'Solved without hints',
     intro:
       'Arrange whole ayat, or the words of an ayah, in the correct order. Drag cards into the answer boxes (or tap). There is no timer.',
     challengesTitle: 'Challenges',
@@ -75,10 +80,7 @@ const en: TranslationResources = {
       expert:
         'Expert: 13 or more words across several ayat, without ayah breaks. Labels are provisional.',
     },
-    practiceTitle: 'Random practice',
-    practiceBody:
-      'Opens a random challenge for the selected difficulty, preferring ones you have not finished yet.',
-    practice: 'Start practice',
+    practice: 'Random practice',
     play: 'Play',
     playAgain: 'Play again',
     locked: 'Locked (premium)',

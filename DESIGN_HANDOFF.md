@@ -5,6 +5,24 @@ Figma file: `Suna-Games` (`cAAsdLTEgV0sgybvqgE3Kn`), Home wireframe node
 `docs/figma/home-wireframe-2003-324.png`. The wireframe is low-fidelity and
 structural; final UI is designed separately.
 
+## Figma inventory (checked 2026-10-24, Phase 5)
+
+Read through the Figma MCP server (read-only). Pages `MVP`, `Design`,
+`Draft`, and `Cover` are empty. `↳ Workspace` holds:
+
+| Node | What it is | Usable as |
+| --- | --- | --- |
+| `2003:324` "mock" | Low-fidelity Home wireframe (unchanged since Phase 0) | Structure only (already applied) |
+| `2003:328` "Frame 2" / `2001:309` "image 2" | Flattened raster concept of a Susun Ayat start screen: green palette, four-leaf logo, "Pilih Level" / "Pilih Surah" buttons, best scores Normal/Sulit, sound and settings buttons | Concept only. Not a layered frame: no variables, text styles, or components to extract |
+| `2003:321` / `2003:326` "image 5/6" | Flattened sheet of blue mascot poses (idle, sleepy, waving, rocket, glasses, etc.) | Pose reference only. Not layered; ownership/licence to be confirmed before shipping any pose |
+| `2001:311`, `2001:314` "image 3/4" | Moodboard screenshots of other games' characters | Inspiration only. Never ship these |
+
+There are no Figma variables (`get_variable_defs` on `2003:324` is empty),
+no final screen frames, and no layered mascot. Iqbal then asked for an
+interim in-house design (see below). Figma asset URLs are still unreachable from the cloud build
+environment; screenshots are only available at the node's natural size, so
+the mascot could not be re-exported at 3x from here.
+
 ## What the wireframe defines (and how it was mapped)
 
 | Wireframe | Implementation |
@@ -19,63 +37,90 @@ structural; final UI is designed separately.
 | Floating 3-item bottom bar (Home, Statisic, Account) | Standard tab bar with **4** tabs per spec: Home, Hafalan, Statistik, Profil |
 | Blue mascot (2003:380) as Account icon | Used as the local profile avatar; tabs use outline icons |
 
+## Interim design (Phase 5, 2026-10-24)
+
+No final Figma design exists yet, so Iqbal asked Claude to design an interim
+version that will be replaced later. Everything below is meant to be swapped
+without touching game logic.
+
+- **Direction:** taken from the green Susun Ayat concept (`2003:328`): deep
+  green primary, soft sage, a warm peach accent, warm off-white background,
+  white cards with a hairline border and a soft shadow, generous radii.
+- **Tokens:** `src/theme/tokens.ts` (colors, `fontFamilies`, typography,
+  radius incl. `xl`, `elevation`, motion incl. mascot blink timing).
+  Contrast is checked by `src/theme/__tests__/tokens.test.ts` (WCAG AA).
+- **UI font:** Nunito (SIL OFL 1.1) via `@expo-google-fonts/nunito`,
+  bundled. Quran text keeps Amiri Quran.
+- **Components restyled:** `Card`, `Button` (adds `tonal`, `icon`,
+  `fullWidth`; `secondary` is now outlined), `IconButton` (round),
+  `EmptyState` (icon in a tinted circle), `TextField`, tab bar, stack header
+  font, puzzle cards.
+- **Screens:** Home welcome card with a rounded mascot viewport; Susun Ayat
+  entry gets the concept's hero (mark, two-tone title, tagline, progress
+  stats, full-width "Random practice"). Other screens follow through tokens.
+- **Brand assets:** vector sources in `assets/brand/*.svg`, rendered to PNG
+  by `node scripts/render-brand-assets.js` (needs Playwright):
+
+| Source | Outputs | Use |
+| --- | --- | --- |
+| `suna-logo.svg` | `assets/brand/suna-logo{,@2x,@3x}.png`, `assets/favicon.png` | Home header, profile avatar |
+| `app-icon.svg` | `assets/icon.png` | App icon (iOS) |
+| `android-icon-{foreground,background,monochrome}.svg` | `assets/android-icon-*.png` | Android adaptive icon |
+| `splash-icon.svg` | `assets/splash-icon.png` | Splash (`expo-splash-screen` plugin; needs a development build, Expo Go shows its own) |
+| `susun-ayat-mark.svg` | `assets/brand/susun-ayat-mark{,@2x,@3x}.png` | Susun Ayat hero |
+| `susun-ayat-banner.svg` | `assets/brand/susun-ayat-banner{,@2x,@3x}.png` | Game card banner (registry) |
+
+Screenshots: `docs/screenshots/phase-5/` (Indonesian, 390×844 web preview)
+and `maskot.gif` (idle, blink, glance, tap reaction).
+
 ## Assets in the repo
 
 | File | Source | Notes |
 | --- | --- | --- |
-| `assets/mascot/suna-mascot.png` | node 2003:386 render | 91×85 @1x, flattened, includes its own rounded cream frame |
-| `assets/mascot/companion-blue.png` | node 2003:380 render | 51×48 @1x, flattened |
+| `src/features/mascot/sunaMascotLayers.tsx` | Claude's vector redraw of node 2003:386 | Layered mascot in use (see below) |
+| `assets/mascot/suna-mascot.png` | node 2003:386 render | 91×85 @1x, flattened; kept as `SUNA_MASCOT_FLAT` fallback |
 
-Limitation: these were captured as @1x node renders because the export URLs
-were not reachable from the build environment. They look soft on @2x/@3x
-screens. **Needed:** re-export at 3x PNG (or SVG) and replace the files
-in place; no code changes required if the aspect ratio stays the same
-(otherwise update `width`/`height` in `mascotArtwork.ts`).
+The blue companion (node 2003:380) is no longer used; the profile avatar
+now uses the Suna logo.
 
-## Mascot: what exists vs what is needed
+## Mascot
 
-The mascot is a single flattened image, so only whole-image motion is
-implemented: idle breathing (translate + ≤1.5% uniform scale), occasional
-sway, greeting hop, and tap squash. No facial animation is faked.
+`SUNA_MASCOT` is now a **layered** vector redraw of the tofu-cube mascot
+(`src/features/mascot/sunaMascotLayers.tsx`). All layers share one 200×200
+artboard and stack at (0,0); pivots are in `PIVOTS` (shoulders, face, feet).
+Layers: `Shadow`, `Legs`, `ArmLeft`, `ArmRight`, `Body`, `Cheeks`,
+`EyesOpen`, `EyesHappy`, `EyesClosed`, `MouthSmile`, `MouthNeutral`,
+`MouthOpen`. Expressions switch on the UI thread (shared values), so they
+never re-render React.
 
-| State | Status | Needs |
+| State | Status | How |
 | --- | --- | --- |
-| idle | ✅ whole-image | — |
-| greet / tap (reactions) | ✅ whole-image | — |
-| blink | ⬜ | Separate left/right eye layers, or open/closed eye overlays |
-| smile | ⬜ | Mouth expression layers (neutral, smile, open) |
-| wave | ⬜ | Separate left/right arm layers with shoulder anchor |
-| lookLeft / lookRight | ⬜ | Eye/pupil layers or alternate face poses (no true 3D turn from 2D) |
-| sniff | ⬜ | Nose/face layer for small coordinated motion |
-| sleepy / sleeping | ⬜ | Half-closed and closed eye poses |
-| happy / encourage | 🟡 whole-image motion | Implemented as bounce (happy, on a solved puzzle) and a slow nod (encourage, on a wrong check). Needs smile/encouraging face layers for real expressions |
+| idle | ✅ | Breathing, random blink (sometimes double), glance left/right, occasional sway |
+| blink | ✅ | Eyes scale shut around the eye line |
+| smile | ✅ | Default mouth |
+| lookLeft / lookRight | ✅ | Eyes and face shift toward the gaze (2D, no 3D turn) |
+| greet | ✅ | Hop + right-arm wave + open mouth (Home focus, results) |
+| tap | ✅ | Squash + laughing eyes + open mouth |
+| happy | ✅ | Two bounces, both arms up, laughing face (solved puzzle) |
+| encourage | ✅ | Slow nod + raised arm, smiling (wrong answer) |
+| sleepy / sleeping, sniff | ⬜ | `EyesClosed` exists; no trigger defined yet |
 
-### Requested layered export
+Reduced motion (app or OS), an unfocused screen, or a backgrounded app stop
+every animation and timer; the mascot rests smiling.
 
-Export each part as a transparent PNG (3x) or SVG, all on the **same artboard
-size** so parts stack at (0,0) without manual offsets:
+**To replace with designer art:** export the same layer list on one shared
+artboard (SVG preferred), keep or update `PIVOTS`, and swap the drawings in
+`sunaMascotLayers.tsx`. The controller does not change.
 
-- `body` (box without face and arms)
-- `eye-left-open`, `eye-left-closed`, `eye-right-open`, `eye-right-closed`
-- `mouth-neutral`, `mouth-smile`, `mouth-open`
-- `arm-left`, `arm-right` (+ shoulder pivot coordinates)
-- `legs` if they move
-- `cheeks` (optional)
+## Still pending from design
 
-Anchor convention: coordinates in artboard points, origin top-left. Provide
-pivot points for arms (shoulder) and the whole body (bottom-centre between the
-feet; current sway pivots at `50% 100%`). The code will scale every layer by
-the same factor so parts stay aligned at any viewport size.
-
-## Other pending assets
-
-- App logo (header tile and app icon; current icons are Expo defaults).
-- Susun Ayat banner (16:6 slot in the game card; placeholder shown now).
+- Final Figma frames and variables → replace token values and restyle.
+- Designer-made logo, app icon, splash, Susun Ayat banner (replace the SVG
+  sources in `assets/brand/` and re-run the render script).
+- Designer layered mascot (optional; the interim one is complete).
 - Tab icons if custom ones are desired (Ionicons used now).
-- Final colors and typography → replace values in `src/theme/tokens.ts`.
 - Designed short SFX and optional mascot sounds. Placeholders today:
   `assets/sfx/{pick,place,retry,success}.wav`, synthesized tones from
-  `scripts/generate-sfx.py`. Replace the files, keep the names.
-- Confetti colours (`celebrationColors` in tokens) and mascot happy /
-  encourage face layers.
+  `scripts/generate-sfx.py`. Replace the files, keep the names, record the
+  licence here.
 - Arabic Quran font choice (Phase 2).

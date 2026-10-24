@@ -53,9 +53,11 @@ export function AnswerSlot({
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  // min sizes, not fixed ones, so the number grows with the OS font scale.
   number: {
-    width: 28,
-    height: 28,
+    minWidth: 28,
+    minHeight: 28,
+    paddingHorizontal: spacing.xs,
     borderRadius: radius.pill,
     backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
