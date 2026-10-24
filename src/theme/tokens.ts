@@ -22,6 +22,9 @@ export const colors = {
   dev: '#8A5A00',
   devSoft: '#FFF1D6',
   danger: '#B3261E',
+  dangerSoft: '#FBE9E7',
+  success: '#2F5E45',
+  successSoft: '#DDE8DF',
 } as const;
 
 export const spacing = {
@@ -57,6 +60,17 @@ export const typography = {
 
 export type TypographyVariant = keyof typeof typography;
 
+/**
+ * Quran text only. Amiri Quran (SIL OFL 1.1) is bundled so harakat and
+ * Uthmani marks render the same on iOS and Android. The tall line height
+ * leaves room for stacked marks above and below the letters.
+ */
+export const quranTypography = {
+  fontFamily: 'AmiriQuran_400Regular',
+  card: { fontSize: 24, lineHeight: 48 },
+  passage: { fontSize: 26, lineHeight: 54 },
+} as const;
+
 export const motion = {
   /** Duration of one half of the idle breathing cycle. */
   idleBreathMs: 1600,
@@ -64,6 +78,9 @@ export const motion = {
   idleVariationMaxMs: 14000,
   reactionMs: 520,
   pressFeedbackOpacity: 0.7,
+  /** Hold before a card starts dragging, so quick swipes still scroll. */
+  dragActivationMs: 180,
+  dragLiftScale: 1.03,
 } as const;
 
 /** Minimum tap target size (Apple HIG 44pt, Material 48dp). */

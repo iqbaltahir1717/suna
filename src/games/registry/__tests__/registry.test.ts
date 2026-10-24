@@ -1,10 +1,10 @@
 import { GAMES, isPlayable, listVisibleGames, type GameDefinition } from '@/games/registry';
 
 describe('game registry', () => {
-  it('contains Susun Ayat, not yet playable', () => {
+  it('contains a playable Susun Ayat', () => {
     const susunAyat = GAMES.find((g) => g.id === 'susun-ayat');
     expect(susunAyat).toBeDefined();
-    expect(isPlayable(susunAyat!)).toBe(false);
+    expect(isPlayable(susunAyat!)).toBe(true);
   });
 
   it('has unique ids', () => {

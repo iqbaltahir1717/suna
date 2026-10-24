@@ -1,0 +1,16 @@
+export {
+  applyHint,
+  checkAnswer,
+  createPuzzle,
+  findWrongSlots,
+  hintsRemaining,
+  isComplete,
+  placePiece,
+  returnPiece,
+  seededRandom,
+  type CheckResult,
+  type PuzzlePiece,
+  type PuzzleState,
+  type PuzzleStatus,
+  type Random,
+} from './puzzle';
