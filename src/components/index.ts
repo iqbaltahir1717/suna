@@ -10,3 +10,4 @@ export { Screen } from './Screen';
 export { Section } from './Section';
 export { SegmentedControl } from './SegmentedControl';
 export { SwitchRow } from './SwitchRow';
+export { TextField } from './TextField';

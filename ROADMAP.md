@@ -109,13 +109,37 @@ Phase 3 below.
 - ⬜ Terminology review of the four difficulty labels.
 
 **Next concrete task:** content review of the 10 surahs and 44 challenges,
-then device QA. After that, Phase 4 (hafalan tracker).
+then device QA.
 
-## Phase 4 — Hafalan tracker ⬜
+## Phase 4 — Hafalan tracker ✅ (pending device QA)
 
-Manual statuses (learning, reviewing, memorized) per ayah range, with dates
-and local summaries. Separate from puzzle scores. Gated by `hafalan_tracker`.
-New migration adds the hafalan table (see DATA_MODEL.md).
+- ✅ Migration v2: `hafalan_entries` and `hafalan_events` (dated history),
+  with CHECK constraints and a v1→v2 upgrade test. See DATA_MODEL.md.
+- ✅ Surah names and ayah counts for all 114 surahs (6236 ayat) generated
+  from the same verified Tanzil Uthmani 1.0.2 file (same md5) by
+  `scripts/extract-tanzil-metadata.mjs`; a test checks it against every
+  bundled Susun Ayat surah.
+- ✅ Manual statuses per ayah range (learning, reviewing, memorized), set
+  only by the user. Ranges are validated against the surah's ayah count and
+  may not overlap within a surah (clear message naming the conflicting
+  range).
+- ✅ Dates: added, status since, last review ("Log a review today"), and a
+  per-entry history list.
+- ✅ Local summary: ayat per status, share of 6236 ayat marked memorized,
+  surahs recorded, surahs fully memorized, last recorded. Shown on the
+  Hafalan tab, Home preview, and Statistik (separate from game activity).
+- ✅ Gated by `hafalan_tracker` on the tab, Home, Statistik, and the editor
+  routes. Only the dev override can unlock it today (no purchases).
+- ✅ Separation tested: game sessions/completions never change hafalan and
+  vice versa.
+- ⬜ Latin surah names for all 114 surahs. Today only the 10 Susun Ayat
+  surahs have Latin names; others show "Surah N" plus the Arabic name from
+  Tanzil. Add Latin/Indonesian names from a verified source (for example
+  Tanzil `quran-data.xml` `tname`) with provenance, not by hand.
+- ⬜ Device QA: number pad entry, keyboard covering the note field, picker
+  modal on Android back button, largest text size.
+- ⬜ Backup/export of hafalan data (it lives only on this device until
+  Phase 8 sync).
 
 ## Phase 5 — Final design and animation ⬜ (can overlap)
 

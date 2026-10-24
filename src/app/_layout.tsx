@@ -45,6 +45,11 @@ function RootStack() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="notifications" options={{ title: t('notifications.title') }} />
       <Stack.Screen name="premium" options={{ title: t('premium.title') }} />
+      <Stack.Screen name="hafalan-entry/new" options={{ title: t('hafalan.editor.newTitle') }} />
+      <Stack.Screen
+        name="hafalan-entry/[entryId]"
+        options={{ title: t('hafalan.editor.editTitle') }}
+      />
       <Stack.Screen name="games/susun-ayat/index" options={{ title: t('games.susunAyat.title') }} />
       <Stack.Screen
         name="games/susun-ayat/[levelId]"

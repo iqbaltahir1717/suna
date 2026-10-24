@@ -1,33 +1,49 @@
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { AppText, Badge, Button, Card, EmptyState } from '@/components';
+import { AppText, Badge, Button, Card } from '@/components';
 import { useEntitlements } from '@/features/purchases/EntitlementsProvider';
 
+import { HafalanSummaryCard } from './HafalanSummaryCard';
+import { useHafalanData } from './useHafalanData';
+
 /**
- * Locked premium preview, or the (not yet built) tracker's empty state when
- * `hafalan_tracker` is active. Used on Home, Hafalan, and Statistik.
+ * Hafalan preview for Home and Statistik: the locked premium card, or the
+ * self-reported summary with a link to the tracker when `hafalan_tracker` is
+ * active.
  */
-export function HafalanAccessCard({ showDescription = true }: { showDescription?: boolean }) {
+export function HafalanAccessCard({
+  showDescription = true,
+  showOpen = true,
+}: {
+  showDescription?: boolean;
+  showOpen?: boolean;
+}) {
+  const { has } = useEntitlements();
+  if (has('hafalan_tracker')) return <UnlockedPreview showOpen={showOpen} />;
+  return <HafalanLockedCard showDescription={showDescription} />;
+}
+
+function UnlockedPreview({ showOpen }: { showOpen: boolean }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { has } = useEntitlements();
-
-  if (has('hafalan_tracker')) {
-    return (
-      <Card>
-        <EmptyState
-          icon="book-outline"
-          title={t('hafalan.unlockedTitle')}
-          body={t('hafalan.unlockedBody')}
+  const data = useHafalanData(true);
+  return (
+    <HafalanSummaryCard summary={data?.summary ?? null}>
+      {showOpen ? (
+        <Button
+          label={t('hafalan.open')}
+          variant="secondary"
+          onPress={() => router.navigate('/hafalan')}
         />
-        <AppText variant="caption" color="textMuted">
-          {t('hafalan.statuses')}
-        </AppText>
-      </Card>
-    );
-  }
+      ) : null}
+    </HafalanSummaryCard>
+  );
+}
 
+export function HafalanLockedCard({ showDescription = true }: { showDescription?: boolean }) {
+  const { t } = useTranslation();
+  const router = useRouter();
   return (
     <Card>
       <Badge label={t('common.premium')} tone="locked" icon="lock-closed" />
