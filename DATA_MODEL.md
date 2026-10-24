@@ -60,13 +60,23 @@ Unknown keys and invalid values are ignored on load (defaults apply).
 | Interface | Implemented | Used by |
 | --- | --- | --- |
 | `SettingsRepository` (`load`, `save`) | ✅ SQLite | SettingsProvider |
-| `ProgressRepository` (`getActivitySummary`, `recordSession`, `markChallengeCompleted`) | ✅ SQLite | Home and Statistik summary; writes start in Phase 2 |
+| `ProgressRepository` (`getActivitySummary`, `listCompletedChallenges`, `recordSession`, `markChallengeCompleted`) | ✅ SQLite | Home and Statistik summary; Susun Ayat writes sessions and completions, and reads completions for the challenge list |
 | `NotificationsRepository` (`list`, `countUnread`, `markRead`) | ✅ SQLite | Notification inbox and header dot |
 | `HafalanRepository` (`list`, `upsert`, `remove`) | ⬜ interface only (`features/hafalan/types.ts`) | Phase 4 |
 
 Repositories depend on the narrow `SqlDatabase` interface
 (`src/data/db/types.ts`), which expo-sqlite satisfies on device and
 `src/test/nodeSqlite.ts` satisfies in Jest via `node:sqlite`.
+
+## How Susun Ayat writes progress (Phase 2)
+
+- One `game_sessions` row per attempt. A solved attempt stores `ended_at`,
+  `completed = 1`, hints used, and failed checks (`mistakes`, informational).
+  An attempt the player touched but left (back, replay, next) is stored with
+  `ended_at = NULL`, `completed = 0`. Untouched visits store nothing.
+- A solved attempt also upserts `challenge_progress` with the level's
+  `content_version`.
+- No schema change was needed; the database stays at v1.
 
 ## Separation rule: activity vs hafalan
 

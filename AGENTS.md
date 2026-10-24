@@ -36,7 +36,17 @@ and do not build beyond it without instruction.
 - Real content requires: a verified source, a license/attribution review,
   preserved source and version metadata, and qualified human review of text
   and segmentation.
-- Arabic direction is local to Quran components. Never flip the whole UI to RTL.
+- Arabic direction is local to Quran components (`QuranText`). Never flip
+  the whole UI to RTL.
+- Bundled text lives in `src/games/susun-ayat/content/quran/*.json`, produced
+  only by `scripts/extract-tanzil-surah.mjs`. Never hand-edit it: the Tanzil
+  license forbids changing the text, and a test checks each file's hash.
+  Keep the Tanzil copyright block and the in-app link to tanzil.net.
+- Level ids are permanent once shipped (progress rows key on them). Bump
+  `CONTENT_VERSION` when levels or text change. Keep `CONTENT_REVIEW_STATUS`
+  at `pending` until a qualified reviewer signs off (see CONTENT.md).
+- Validation compares card text, not card identity, so identical ayat are
+  interchangeable.
 
 ## Premium
 
@@ -51,8 +61,8 @@ and do not build beyond it without instruction.
 ## Architecture
 
 - `src/app/` holds routes only; screens live in `src/features/` or `src/games/`.
-- Puzzle rules (future `games/susun-ayat/engine/`) are pure TypeScript with
-  no React or storage imports.
+- Puzzle rules (`games/susun-ayat/engine/`) are pure TypeScript with no
+  React, storage, or Quran imports; tests use neutral fixtures.
 - Persistence goes through repository interfaces in `src/data/`. Schema
   changes are new, append-only migrations, documented in DATA_MODEL.md.
 - The mascot (`src/features/mascot/`) is independent of navigation and game

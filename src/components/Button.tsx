@@ -8,23 +8,27 @@ export function Button({
   label,
   onPress,
   variant = 'primary',
+  disabled = false,
   accessibilityHint,
 }: {
   label: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary';
+  disabled?: boolean;
   accessibilityHint?: string;
 }) {
   const primary = variant === 'primary';
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
       accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled }}
       style={({ pressed }) => [
         styles.base,
         primary ? styles.primary : styles.secondary,
-        pressed && styles.pressed,
+        (pressed || disabled) && styles.pressed,
       ]}
     >
       <AppText variant="heading" color={primary ? 'textInverse' : 'primary'}>

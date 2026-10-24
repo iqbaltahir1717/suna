@@ -1,3 +1,4 @@
+import { AmiriQuran_400Regular, useFonts } from '@expo-google-fonts/amiri-quran';
 import { Stack } from 'expo-router/stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
@@ -10,6 +11,11 @@ import { SettingsProvider } from '@/features/settings/SettingsProvider';
 import { colors } from '@/theme';
 
 export default function RootLayout() {
+  // Bundled locally (no network). If loading fails, Quran text falls back to
+  // the system Arabic font rather than blocking the app.
+  const [fontsLoaded, fontError] = useFonts({ AmiriQuran_400Regular });
+  if (!fontsLoaded && !fontError) return null;
+
   return (
     <GestureHandlerRootView style={styles.root}>
       <DataProvider>
@@ -39,7 +45,11 @@ function RootStack() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="notifications" options={{ title: t('notifications.title') }} />
       <Stack.Screen name="premium" options={{ title: t('premium.title') }} />
-      <Stack.Screen name="games/susun-ayat" options={{ title: t('games.susunAyat.title') }} />
+      <Stack.Screen name="games/susun-ayat/index" options={{ title: t('games.susunAyat.title') }} />
+      <Stack.Screen
+        name="games/susun-ayat/[levelId]"
+        options={{ title: t('games.susunAyat.title') }}
+      />
     </Stack>
   );
 }

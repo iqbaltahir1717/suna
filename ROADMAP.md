@@ -32,19 +32,39 @@ Status legend: ✅ done · 🟡 partial · ⬜ not started
 Boundaries kept: no puzzle engine, no Quran text, no purchases, no backend,
 no push, no notification permission request.
 
-## Phase 2 — First playable loop ⬜
+## Phase 2 — First playable loop ✅ (pending content review and device QA)
 
-- One reviewed surah; five verse-ordering challenges (complete ayat).
-- Card selection with drag and tap-to-place; hints; validation that accepts
-  visibly identical repeated cards in either order; results screen showing
-  the full correct passage; local progress via `ProgressRepository`.
-- Verify Arabic rendering early (font, shaping, harakat, wrapping, RTL local
-  to the Quran component).
+- ✅ Surah: **Al-Fatihah** (7 ayat). Chosen because it is the surah every
+  beginner, child or adult, already hears daily, and 7 ayat give five
+  distinct ranges.
+- ✅ Text: Tanzil Quran Text, Uthmani v1.0.2 (CC BY 3.0, verbatim), with the
+  copyright block, file hashes, and provenance kept in the content JSON;
+  in-app attribution and link to tanzil.net. See CONTENT.md.
+- ✅ Five complete-ayat challenges, all free: 1–3, 3–5, 5–7 (beginner), 1–5,
+  1–7 (medium).
+- ✅ Pure engine (`createPuzzle`, `placePiece`, `returnPiece`, `checkAnswer`,
+  `applyHint`) with tests; identical cards accepted in either order.
+- ✅ Tap-to-place (primary, accessible) and press-and-hold drag (RNGH v3 +
+  Reanimated, UI-thread motion); hints that lock a correct card; gentle
+  "try again" with flagged slots; no timer, no lives.
+- ✅ Results screen with the full passage in order and the "not hafalan" note.
+- ✅ Local progress: one `game_sessions` row per attempt (abandoned attempts
+  only if the player touched them), `challenge_progress` on completion,
+  "Completed" badges on the challenge list, Home/Statistik summary.
+- ✅ Arabic rendering: bundled Amiri Quran font (OFL), RTL local to
+  `QuranText`, tall line height for harakat; checked in the web preview.
+- ⬜ **Qualified human review** of the text and challenge ranges
+  (`CONTENT_REVIEW_STATUS = 'pending'`).
+- ⬜ Re-download Tanzil Uthmani from tanzil.net (latest version) and diff;
+  tanzil.net was blocked from the build environment.
+- ⬜ Device QA: Arabic shaping on iOS and Android, drag inside the scroll
+  view, largest text size, small phones.
+- ⬜ Sound effects: no licensed SFX yet, so none play (Phase 5).
+- ⬜ No auto-scroll while dragging; long challenges rely on tap-to-place.
 
-**Next concrete task:** choose and document the verified Quran text source
-(license, attribution, version), then build the pure `engine/` module
-(`createPuzzle`, `placeCard`, `validate`) with unit tests using neutral
-non-Quran fixtures, before any UI.
+**Next concrete task:** get the content reviewed (CONTENT.md checklist),
+re-verify against the current tanzil.net release, and run the device QA list
+in README. Then start Phase 3 with word-ordering on the same engine.
 
 ## Phase 3 — Content and progression ⬜
 

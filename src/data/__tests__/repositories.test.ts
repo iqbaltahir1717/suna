@@ -80,6 +80,26 @@ describe('progress repository', () => {
   });
 });
 
+describe('progress repository: completed challenges', () => {
+  it('lists completions per game with counts', async () => {
+    const repo = createProgressRepository(await setup());
+    expect(await repo.listCompletedChallenges('susun-ayat')).toEqual({});
+    const base = { gameId: 'susun-ayat', levelId: 'lvl-1', contentVersion: 'v1' };
+    await repo.markChallengeCompleted({ ...base, completedAt: 100 });
+    await repo.markChallengeCompleted({ ...base, contentVersion: 'v2', completedAt: 200 });
+    await repo.markChallengeCompleted({ ...base, gameId: 'other-game', completedAt: 300 });
+    expect(await repo.listCompletedChallenges('susun-ayat')).toEqual({
+      'lvl-1': {
+        levelId: 'lvl-1',
+        contentVersion: 'v2',
+        firstCompletedAt: 100,
+        lastCompletedAt: 200,
+        completionCount: 2,
+      },
+    });
+  });
+});
+
 describe('notifications repository', () => {
   it('starts empty and tracks unread items', async () => {
     const db = await setup();

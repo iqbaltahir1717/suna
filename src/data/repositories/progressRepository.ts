@@ -24,8 +24,18 @@ export interface SessionRecord {
   mistakes: number;
 }
 
+export interface ChallengeCompletion {
+  levelId: string;
+  contentVersion: string;
+  firstCompletedAt: number;
+  lastCompletedAt: number;
+  completionCount: number;
+}
+
 export interface ProgressRepository {
   getActivitySummary(): Promise<ActivitySummary>;
+  /** Completed levels of one game, keyed by level id. */
+  listCompletedChallenges(gameId: string): Promise<Record<string, ChallengeCompletion>>;
   /** Records one finished or abandoned play session. Returns its row id. */
   recordSession(session: SessionRecord): Promise<number>;
   /** Upserts per-level completion. Called by a game after validation succeeds. */
@@ -51,6 +61,32 @@ export function createProgressRepository(db: SqlDatabase): ProgressRepository {
         practiceSessions: sessions?.n ?? 0,
         lastActivityAt: sessions?.last ?? null,
       };
+    },
+
+    async listCompletedChallenges(gameId) {
+      const rows = await db.getAllAsync<{
+        level_id: string;
+        content_version: string;
+        first_completed_at: number;
+        last_completed_at: number;
+        completion_count: number;
+      }>(
+        `SELECT level_id, content_version, first_completed_at, last_completed_at, completion_count
+         FROM challenge_progress WHERE game_id = ?`,
+        gameId,
+      );
+      return Object.fromEntries(
+        rows.map((row) => [
+          row.level_id,
+          {
+            levelId: row.level_id,
+            contentVersion: row.content_version,
+            firstCompletedAt: row.first_completed_at,
+            lastCompletedAt: row.last_completed_at,
+            completionCount: row.completion_count,
+          },
+        ]),
+      );
     },
 
     async recordSession(session) {
