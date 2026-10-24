@@ -1,4 +1,10 @@
 import { AmiriQuran_400Regular, useFonts } from '@expo-google-fonts/amiri-quran';
+import {
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+} from '@expo-google-fonts/nunito';
 import { Stack } from 'expo-router/stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
@@ -8,12 +14,18 @@ import { useTranslation } from 'react-i18next';
 import { DataProvider } from '@/data/DataProvider';
 import { EntitlementsProvider } from '@/features/purchases/EntitlementsProvider';
 import { SettingsProvider } from '@/features/settings/SettingsProvider';
-import { colors } from '@/theme';
+import { colors, typography } from '@/theme';
 
 export default function RootLayout() {
-  // Bundled locally (no network). If loading fails, Quran text falls back to
-  // the system Arabic font rather than blocking the app.
-  const [fontsLoaded, fontError] = useFonts({ AmiriQuran_400Regular });
+  // Bundled locally (no network). If loading fails, text falls back to the
+  // system fonts rather than blocking the app.
+  const [fontsLoaded, fontError] = useFonts({
+    AmiriQuran_400Regular,
+    Nunito_400Regular,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+  });
   if (!fontsLoaded && !fontError) return null;
 
   return (
@@ -39,6 +51,7 @@ function RootStack() {
         headerShadowVisible: false,
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
+        headerTitleStyle: { fontFamily: typography.heading.fontFamily },
         contentStyle: { backgroundColor: colors.background },
       }}
     >

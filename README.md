@@ -52,8 +52,16 @@ npm run web       # browser preview (development aid only)
 The scripts use port **8082** so Suna can run next to another Expo project on
 the default 8081. Override with `npx expo start --port <port>` if needed.
 
-Phases 0–3 run in **Expo Go** (including `expo-audio` and `expo-haptics`): every native module used ships with Expo Go
-(the Amiri Quran font is a bundled asset loaded with expo-font).
+Phases 0–5 run in **Expo Go** (including `expo-audio`, `expo-haptics`, and
+`react-native-svg` for the mascot): every native module used ships with Expo
+Go (the Amiri Quran and Nunito fonts are bundled assets loaded with
+expo-font). The custom splash screen and app icons only show in a
+development or store build; Expo Go shows its own.
+
+Brand PNGs (icons, splash, logo, banner) are rendered from
+`assets/brand/*.svg` with `node scripts/render-brand-assets.js` (needs
+Playwright with Chromium). The PNGs are committed, so building never needs
+the script.
 
 ### When a development build becomes necessary
 

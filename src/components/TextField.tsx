@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: borders.hairline,
     borderColor: colors.border,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
   },
   multiline: { minHeight: minTapTarget * 2, textAlignVertical: 'top' },
 });

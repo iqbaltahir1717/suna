@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { AppText } from '@/components';
 import { MascotView, type MascotHandle } from '@/features/mascot/MascotView';
 import { useSettings } from '@/features/settings/SettingsProvider';
-import { spacing } from '@/theme';
+import { colors, radius, spacing } from '@/theme';
 
 /** Re-greet at most this often when returning to Home. */
 const GREETING_COOLDOWN_MS = 5 * 60 * 1000;
 let lastGreetingAt = 0;
 
-const MASCOT_SIZE = 96;
+const MASCOT_SIZE = 92;
 
 export function WelcomeSection() {
   const { t } = useTranslation();
@@ -39,15 +39,17 @@ export function WelcomeSection() {
 
   return (
     <View style={styles.row}>
-      <MascotView
-        ref={mascot}
-        size={MASCOT_SIZE}
-        paused={!focused}
-        reduceMotion={reduceMotion}
-        accessibilityLabel={t('home.mascotA11y')}
-      />
+      <View style={styles.viewport}>
+        <MascotView
+          ref={mascot}
+          size={MASCOT_SIZE}
+          paused={!focused}
+          reduceMotion={reduceMotion}
+          accessibilityLabel={t('home.mascotA11y')}
+        />
+      </View>
       <View style={styles.text}>
-        <AppText variant="title">{t('home.welcomeTitle')}</AppText>
+        <AppText variant="title" color="primary">{t('home.welcomeTitle')}</AppText>
         <AppText color="textMuted">{t('home.welcomeMessage')}</AppText>
       </View>
     </View>
@@ -55,6 +57,19 @@ export function WelcomeSection() {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: radius.xl,
+    backgroundColor: colors.primarySoft,
+  },
+  // Rounded mascot viewport (wireframe node 2003:386).
+  viewport: {
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+    padding: spacing.xs,
+  },
   text: { flex: 1, gap: spacing.xs },
 });

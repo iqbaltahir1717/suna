@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, minTapTarget, motion, radius } from '@/theme';
+import { borders, colors, minTapTarget, motion, radius } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
 
@@ -23,7 +23,7 @@ export function IconButton({
       hitSlop={4}
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
     >
-      <Icon name={icon} size={24} />
+      <Icon name={icon} size={22} />
       {showDot ? <View style={styles.dot} /> : null}
     </Pressable>
   );
@@ -33,8 +33,10 @@ const styles = StyleSheet.create({
   button: {
     width: minTapTarget,
     height: minTapTarget,
-    borderRadius: radius.md,
+    borderRadius: radius.pill,
     backgroundColor: colors.surface,
+    borderWidth: borders.hairline,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },

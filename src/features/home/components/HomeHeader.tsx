@@ -1,10 +1,12 @@
 import { useRouter } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText, IconButton } from '@/components';
 import { useUnreadCount } from '@/features/notifications/useUnreadCount';
-import { colors, minTapTarget, radius, spacing } from '@/theme';
+import { minTapTarget, radius, spacing } from '@/theme';
+
+const SUNA_LOGO = require('../../../../assets/brand/suna-logo.png');
 
 export function HomeHeader() {
   const { t } = useTranslation();
@@ -19,12 +21,8 @@ export function HomeHeader() {
         accessibilityRole="header"
         accessibilityLabel={t('common.appName')}
       >
-        {/* Placeholder logo slot until the final logo asset exists. */}
-        <View style={styles.logo}>
-          <AppText variant="title" color="primary">
-            S
-          </AppText>
-        </View>
+        {/* Interim logo (assets/brand/suna-logo.svg); replace the PNG in place. */}
+        <Image source={SUNA_LOGO} style={styles.logo} accessible={false} />
         <AppText variant="display">{t('common.appName')}</AppText>
       </View>
       <IconButton
@@ -42,12 +40,5 @@ export function HomeHeader() {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   brand: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flexShrink: 1 },
-  logo: {
-    width: minTapTarget,
-    height: minTapTarget,
-    borderRadius: radius.md,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  logo: { width: minTapTarget, height: minTapTarget, borderRadius: radius.md },
 });

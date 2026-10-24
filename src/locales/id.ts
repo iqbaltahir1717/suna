@@ -54,6 +54,11 @@ const id = {
     },
   },
   susunAyatEntry: {
+    heroTitleFirst: 'Susun',
+    heroTitleSecond: 'Ayat',
+    tagline: 'Belajar, susun, dan mainkan.',
+    statCompleted: 'Tantangan selesai',
+    statNoHints: 'Selesai tanpa petunjuk',
     intro:
       'Susun ayat utuh, atau kata-kata dalam satu ayat, ke urutan yang benar. Seret kartu ke kotak jawaban (atau ketuk). Tidak ada batas waktu.',
     challengesTitle: 'Tantangan',
@@ -80,10 +85,7 @@ const id = {
       expert:
         'Ahli: 13 kata atau lebih dari beberapa ayat, tanpa pemisah ayat. Label masih sementara.',
     },
-    practiceTitle: 'Latihan acak',
-    practiceBody:
-      'Membuka tantangan acak sesuai tingkat yang dipilih, mendahulukan yang belum kamu selesaikan.',
-    practice: 'Mulai latihan',
+    practice: 'Latihan acak',
     play: 'Mainkan',
     playAgain: 'Main lagi',
     locked: 'Terkunci (premium)',

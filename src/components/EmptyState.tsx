@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { spacing } from '@/theme';
+import { colors, radius, spacing } from '@/theme';
 
 import { AppText } from './AppText';
 import { Icon, type IconName } from './Icon';
@@ -19,7 +19,9 @@ export function EmptyState({
 }) {
   return (
     <View style={styles.container}>
-      <Icon name={icon} size={28} color="textMuted" />
+      <View style={styles.icon}>
+        <Icon name={icon} size={24} color="primary" />
+      </View>
       <AppText variant="heading">{title}</AppText>
       <AppText variant="caption" color="textMuted">
         {body}
@@ -31,4 +33,12 @@ export function EmptyState({
 
 const styles = StyleSheet.create({
   container: { gap: spacing.sm },
+  icon: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

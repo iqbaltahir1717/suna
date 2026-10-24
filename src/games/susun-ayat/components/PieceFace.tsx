@@ -35,7 +35,7 @@ export function PieceFace({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     borderRadius: radius.md,
     borderWidth: borders.thick,
     borderColor: colors.border,
@@ -45,13 +45,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   word: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, minWidth: minTapTarget },
-  pressed: { backgroundColor: colors.surface },
+  pressed: { backgroundColor: colors.surfaceMuted },
 });
 
 const toneStyles = StyleSheet.create({
   default: {},
   locked: { borderColor: colors.success, backgroundColor: colors.successSoft },
   flagged: { borderColor: colors.danger, backgroundColor: colors.dangerSoft },
-  lifted: { borderColor: colors.primary, backgroundColor: colors.background },
+  lifted: { borderColor: colors.primary, backgroundColor: colors.surface },
   success: { borderColor: colors.success, backgroundColor: colors.successSoft },
 });

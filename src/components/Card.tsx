@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, motion, radius, spacing } from '@/theme';
+import { borders, colors, elevation, motion, radius, spacing } from '@/theme';
 
 interface CardProps {
   children: ReactNode;
@@ -11,7 +11,7 @@ interface CardProps {
   style?: StyleProp<ViewStyle>;
 }
 
-/** Flat rounded surface, matching the wireframe's grey blocks. */
+/** Rounded white surface with a hairline border and a soft shadow. */
 export function Card({
   children,
   onPress,
@@ -37,6 +37,9 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
+    borderWidth: borders.hairline,
+    borderColor: colors.border,
+    ...elevation.card,
     padding: spacing.lg,
     gap: spacing.md,
   },

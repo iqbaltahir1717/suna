@@ -1,13 +1,13 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Image, Linking, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText, Badge, Button, Card, Screen, Section, SegmentedControl } from '@/components';
 import { useRepositories } from '@/data/DataProvider';
 import type { ChallengeCompletion, LevelStats } from '@/data/repositories/progressRepository';
 import { useEntitlements } from '@/features/purchases/EntitlementsProvider';
-import { spacing } from '@/theme';
+import { colors, spacing, typography } from '@/theme';
 
 import {
   canPlayLevel,
@@ -25,6 +25,7 @@ import { levelTitle, pieceCountLabel } from './levelText';
 import { GAME_ID } from './usePlaySession';
 
 const TANZIL_URL = 'https://tanzil.net';
+const MARK = require('../../../../assets/brand/susun-ayat-mark.png');
 
 type Filter = Difficulty | 'all';
 
@@ -49,6 +50,18 @@ export function SusunAyatEntryScreen() {
 
   return (
     <Screen edges={['bottom', 'left', 'right']}>
+      <Hero
+        completed={Object.keys(completions).length}
+        noHints={Object.values(levelStats).filter((s) => s.bestHintsUsed === 0).length}
+        total={LEVELS.length}
+      />
+      <Button
+        label={t('susunAyatEntry.practice')}
+        icon="shuffle"
+        fullWidth
+        disabled={playable.length === 0}
+        onPress={practice}
+      />
       <AppText color="textMuted">{t('susunAyatEntry.intro')}</AppText>
 
       <Section title={t('susunAyatEntry.difficultyTitle')}>
@@ -66,18 +79,6 @@ export function SusunAyatEntryScreen() {
             ? t('susunAyatEntry.difficultyNote')
             : t(`susunAyatEntry.difficultyRule.${filter}`)}
         </AppText>
-        <Card>
-          <AppText variant="heading">{t('susunAyatEntry.practiceTitle')}</AppText>
-          <AppText variant="caption" color="textMuted">
-            {t('susunAyatEntry.practiceBody')}
-          </AppText>
-          <Button
-            label={t('susunAyatEntry.practice')}
-            variant="secondary"
-            disabled={playable.length === 0}
-            onPress={practice}
-          />
-        </Card>
       </Section>
 
       {listSurahs(visible).map((surah) => (
@@ -118,6 +119,41 @@ export function SusunAyatEntryScreen() {
         />
       </Section>
     </Screen>
+  );
+}
+
+/** Title area modelled on the green Susun Ayat concept (Figma 2003:328). */
+function Hero({ completed, noHints, total }: { completed: number; noHints: number; total: number }) {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.hero}>
+      <Image source={MARK} style={styles.mark} accessible={false} />
+      <AppText style={styles.heroTitle} accessibilityRole="header">
+        {t('susunAyatEntry.heroTitleFirst')}{' '}
+        <AppText style={[styles.heroTitle, styles.heroTitleSecond]}>
+          {t('susunAyatEntry.heroTitleSecond')}
+        </AppText>
+      </AppText>
+      <AppText color="textMuted">{t('susunAyatEntry.tagline')}</AppText>
+      <View style={styles.stats}>
+        <HeroStat value={`${completed}/${total}`} label={t('susunAyatEntry.statCompleted')} />
+        <View style={styles.statDivider} />
+        <HeroStat value={String(noHints)} label={t('susunAyatEntry.statNoHints')} />
+      </View>
+    </View>
+  );
+}
+
+function HeroStat({ value, label }: { value: string; label: string }) {
+  return (
+    <View style={styles.stat} accessible accessibilityLabel={`${label}: ${value}`}>
+      <AppText variant="caption" color="textMuted" style={styles.center}>
+        {label}
+      </AppText>
+      <AppText variant="display" color="primary" style={styles.center}>
+        {value}
+      </AppText>
+    </View>
   );
 }
 
@@ -194,5 +230,13 @@ function useLevelProgress() {
 }
 
 const styles = StyleSheet.create({
+  hero: { alignItems: 'center', gap: spacing.xs, paddingTop: spacing.md },
+  mark: { width: 96, height: 96, marginBottom: spacing.sm },
+  heroTitle: { ...typography.hero, fontSize: 40, lineHeight: 48, color: colors.primary },
+  heroTitleSecond: { color: colors.sageText },
+  stats: { flexDirection: 'row', alignItems: 'stretch', marginTop: spacing.md, alignSelf: 'stretch' },
+  stat: { flex: 1, gap: spacing.xxs },
+  statDivider: { width: 1, backgroundColor: colors.border },
+  center: { textAlign: 'center' },
   badges: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });
