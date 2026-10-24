@@ -40,6 +40,7 @@ export type MascotState =
   | 'encourage';
 
 /** Reactions that work with the current flattened artwork. */
-export type MascotReaction = 'greet' | 'tap';
+/** Implemented reactions. `happy` and `encourage` are whole-image motion only. */
+export type MascotReaction = 'greet' | 'tap' | 'encourage' | 'happy';
 
 export const IMPLEMENTED_STATES: readonly MascotState[] = ['idle'];

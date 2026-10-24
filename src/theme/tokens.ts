@@ -27,6 +27,9 @@ export const colors = {
   successSoft: '#DDE8DF',
 } as const;
 
+/** Placeholder confetti colours for the completion celebration. */
+export const celebrationColors = ['#2F5E45', '#F2B33D', '#4A90D9', '#E86A5C', '#8BC34A'] as const;
+
 export const spacing = {
   xxs: 2,
   xs: 4,
@@ -79,9 +82,15 @@ export const motion = {
   idleVariationMaxMs: 14000,
   reactionMs: 520,
   pressFeedbackOpacity: 0.7,
-  /** Hold before a card starts dragging, so quick swipes still scroll. */
-  dragActivationMs: 180,
-  dragLiftScale: 1.03,
+  /** Finger travel (pt) before a card starts dragging; tiny, so drag feels immediate. */
+  dragMinDistance: 4,
+  dragLiftScale: 1.08,
+  dragTiltDeg: -3,
+  snapSpring: { damping: 16, stiffness: 220 },
+  /** Delay between cards when a solved answer bounces, one by one. */
+  celebrateStaggerMs: 70,
+  /** How long the celebration plays before the results screen. */
+  celebrateMs: 1500,
 } as const;
 
 /** Minimum tap target size (Apple HIG 44pt, Material 48dp). */

@@ -59,7 +59,7 @@ no push, no notification permission request.
   tanzil.net was blocked from the build environment.
 - ⬜ Device QA: Arabic shaping on iOS and Android, drag inside the scroll
   view, largest text size, small phones.
-- ⬜ Sound effects: no licensed SFX yet, so none play (Phase 5).
+- ✅ Sound effects: placeholder tones synthesized by `scripts/generate-sfx.py` (Phase 3 follow-up); designed SFX replace them in Phase 5.
 - ⬜ No auto-scroll while dragging; long challenges rely on tap-to-place.
 
 Phase 2 follow-ups (review, tanzil.net re-check, device QA) carry over into
@@ -87,12 +87,23 @@ Phase 3 below.
 - ✅ Real statistics on Statistik: completion by difficulty and mode,
   attempts, finished attempts, solved without hints, active days, recent
   attempts. Computed from `game_sessions`; no schema change (still v1).
+- ✅ Drag-first, playful play screen (after Iqbal's test): drag starts as
+  soon as the finger moves; a floating copy follows the finger above both
+  scroll areas; the slot under it lights up; loose drops snap to the nearest
+  empty slot; placed cards can be dragged to swap or back to the bank. The
+  answer is checked automatically when the board is full (no Check button).
+  Cards pop in, wrong cards shake, a solved board bounces card by card with
+  confetti, and the mascot reacts (happy / encourage). Short synthesized
+  SFX and light haptics follow the "Sound effects" setting. Reduced motion
+  turns the animation off. Tap-to-place remains for accessibility.
 - ✅ Phase 2 ids, ranges, and free access unchanged; `CONTENT_VERSION`
   bumped to `2026.10-2`.
 - ⬜ **Qualified human review** of the new text, word segmentation, and all
   44 ranges (CONTENT.md checklist). `CONTENT_REVIEW_STATUS = 'pending'`.
 - ⬜ Re-download from tanzil.net and diff (still blocked from the build
   environment).
+- ⬜ Device QA for drag (iOS and Android): feel of immediate drag vs
+  scrolling the bank, haptics, SFX volume, confetti performance.
 - ⬜ Device QA for word chips: Arabic shaping of single words, RTL wrapping on
   small phones, drag between wrapped rows, largest text size.
 - ⬜ Terminology review of the four difficulty labels.

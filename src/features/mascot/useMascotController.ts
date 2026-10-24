@@ -14,7 +14,12 @@ import { motion } from '@/theme';
 import type { MascotReaction } from './mascotArtwork';
 
 /** Higher wins. Ambient idle variations are 0 and never interrupt a reaction. */
-const REACTION_PRIORITY: Record<MascotReaction, number> = { tap: 1, greet: 2 };
+const REACTION_PRIORITY: Record<MascotReaction, number> = {
+  tap: 1,
+  encourage: 2,
+  greet: 2,
+  happy: 3,
+};
 
 const ease = Easing.inOut(Easing.sin);
 
@@ -113,6 +118,44 @@ export function useMascotController(animate: boolean) {
         );
         sway.set(withTiming(0, { duration: half }));
         duration = motion.reactionMs;
+      } else if (reaction === 'encourage') {
+        // A slow, kind nod: "you can do it".
+        hop.set(
+          withSequence(
+            withTiming(4, { duration: 220, easing: ease }),
+            withTiming(0, { duration: 260, easing: ease }),
+            withTiming(3, { duration: 200, easing: ease }),
+            withTiming(0, { duration: 240, easing: ease }),
+          ),
+        );
+        sway.set(withTiming(0, { duration: 200 }));
+        duration = 920;
+      } else if (reaction === 'happy') {
+        // Two bouncy jumps with a squash on landing.
+        hop.set(
+          withSequence(
+            withTiming(-18, { duration: 200, easing: ease }),
+            withTiming(0, { duration: 200, easing: Easing.in(Easing.quad) }),
+            withTiming(-12, { duration: 180, easing: ease }),
+            withTiming(0, { duration: 180, easing: Easing.in(Easing.quad) }),
+          ),
+        );
+        scale.set(
+          withSequence(
+            withTiming(1.08, { duration: 200 }),
+            withTiming(0.94, { duration: 200 }),
+            withTiming(1.05, { duration: 180 }),
+            withTiming(1, { duration: 220, easing: ease }),
+          ),
+        );
+        sway.set(
+          withSequence(
+            withTiming(-8, { duration: 200, easing: ease }),
+            withTiming(8, { duration: 380, easing: ease }),
+            withTiming(0, { duration: 220, easing: ease }),
+          ),
+        );
+        duration = 820;
       } else {
         hop.set(
           withSequence(

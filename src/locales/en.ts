@@ -50,7 +50,7 @@ const en: TranslationResources = {
   },
   susunAyatEntry: {
     intro:
-      'Arrange whole ayat, or the words of an ayah, in the correct order. Tap a card to place it, or press and hold to drag. There is no timer.',
+      'Arrange whole ayat, or the words of an ayah, in the correct order. Drag cards into the answer boxes (or tap). There is no timer.',
     challengesTitle: 'Challenges',
     levelTitle: '{{surah}} · ayat {{from}}–{{to}}',
     levelTitleWords: '{{surah}} · words of ayat {{from}}–{{to}}',
@@ -98,24 +98,22 @@ const en: TranslationResources = {
     note: 'Completing a puzzle never marks an ayah as memorized automatically.',
   },
   susunAyatPlay: {
-    instructions: 'Arrange the ayat from top to bottom in their order.',
-    instructionsWords: 'Arrange the words from right to left, the way Arabic is read.',
+    instructions: 'Drag the ayat into the boxes, top to bottom in their order.',
+    instructionsWords: 'Drag the words into the boxes, right to left as Arabic is read.',
     lockedTitle: 'This challenge is part of premium',
     lockedBody:
       'The free introductory challenges stay open. Purchases are not available in this version.',
     slotLabel: 'Position {{number}}',
-    emptySlot: 'Tap a card below to fill',
+    emptySlot: 'Drag a card here',
     poolTitle: 'Ayah cards',
     poolTitleWords: 'Word cards',
     poolEmpty: 'All cards are placed.',
-    check: 'Check',
     hint: 'Hint ({{count}})',
     noHints: 'No hints left',
     hintLocked: 'Locked by a hint',
     tryAgain: 'Almost! The marked cards are not in place yet. Try swapping them.',
-    fillAll: 'Fill every position first, then check.',
-    cardHintPool: 'Tap to place in the next empty position. Press and hold to drag.',
-    cardHintPlaced: 'Tap to return it to the cards. Press and hold to drag.',
+    cardHintPool: 'Drag into an answer box, or tap to fill the next empty one.',
+    cardHintPlaced: 'Drag to another box to swap, or tap to send it back.',
     wrongMark: 'Not yet',
     unknownLevel: 'Challenge not found.',
     results: {
@@ -182,7 +180,8 @@ const en: TranslationResources = {
     languageId: 'Indonesia',
     languageEn: 'English',
     sound: 'Sound effects',
-    soundCaption: 'Short sounds for taps and completion are coming later. No background music.',
+    soundCaption:
+      'Short sounds and light vibration when moving cards and finishing a challenge. No background music.',
     reduceMotion: 'Reduce motion',
     reduceMotionCaption: 'Stop mascot animation and non-essential transitions.',
     reduceMotionSystem: 'On because of your device setting.',

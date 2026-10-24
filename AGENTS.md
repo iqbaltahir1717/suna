@@ -83,6 +83,12 @@ and do not build beyond it without instruction.
 
 - Reanimated shared values only; no React state per frame.
 - Prefer transform and opacity. Use `.get()`/`.set()` on shared values.
+- Drag in Susun Ayat: one `DragController` per screen; the floating
+  `DragGhost` and slot highlight run on the UI thread from finger position
+  (`absoluteX/Y`); React renders only at drag start and drop. Tap-to-place
+  must keep working.
+- Sound and haptics go through `useGameFeedback`, which honours the sound
+  setting. Never add background music.
 - Pause when unfocused or backgrounded; clean up timers on unmount; honour OS
   and app reduced motion with a static fallback.
 - Do not fake facial animation by distorting a flattened image.

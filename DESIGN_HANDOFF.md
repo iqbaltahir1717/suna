@@ -48,7 +48,7 @@ sway, greeting hop, and tap squash. No facial animation is faked.
 | lookLeft / lookRight | ⬜ | Eye/pupil layers or alternate face poses (no true 3D turn from 2D) |
 | sniff | ⬜ | Nose/face layer for small coordinated motion |
 | sleepy / sleeping | ⬜ | Half-closed and closed eye poses |
-| happy / encourage | ⬜ | Expressions above; used later for gameplay reactions |
+| happy / encourage | 🟡 whole-image motion | Implemented as bounce (happy, on a solved puzzle) and a slow nod (encourage, on a wrong check). Needs smile/encouraging face layers for real expressions |
 
 ### Requested layered export
 
@@ -73,6 +73,9 @@ the same factor so parts stay aligned at any viewport size.
 - Susun Ayat banner (16:6 slot in the game card; placeholder shown now).
 - Tab icons if custom ones are desired (Ionicons used now).
 - Final colors and typography → replace values in `src/theme/tokens.ts`.
-- Licensed short SFX and optional mascot sounds (none bundled; the sound
-  setting is stored but nothing plays yet).
+- Designed short SFX and optional mascot sounds. Placeholders today:
+  `assets/sfx/{pick,place,retry,success}.wav`, synthesized tones from
+  `scripts/generate-sfx.py`. Replace the files, keep the names.
+- Confetti colours (`celebrationColors` in tokens) and mascot happy /
+  encourage face layers.
 - Arabic Quran font choice (Phase 2).

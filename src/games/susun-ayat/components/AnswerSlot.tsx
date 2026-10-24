@@ -1,8 +1,11 @@
 import type { ComponentRef, ReactNode, Ref } from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components';
 import { borders, colors, radius, spacing } from '@/theme';
+
+import { SlotHighlight } from './SlotHighlight';
 
 /** A numbered answer position. Empty slots show a dashed drop target. */
 export function AnswerSlot({
@@ -10,9 +13,14 @@ export function AnswerSlot({
   label,
   emptyLabel,
   children,
+  hover,
+  reduceMotion,
   ref,
 }: {
   number: number;
+  /** Slot index currently under a dragged card. */
+  hover?: SharedValue<number>;
+  reduceMotion?: boolean;
   label: string;
   /** Shown inside an empty slot; omit to keep the slot quiet. */
   emptyLabel?: string;
@@ -27,15 +35,17 @@ export function AnswerSlot({
         </AppText>
       </View>
       <View style={styles.body}>
-        {children ?? (
-          <View style={styles.empty}>
-            {emptyLabel ? (
-              <AppText variant="caption" color="textMuted">
-                {emptyLabel}
-              </AppText>
-            ) : null}
-          </View>
-        )}
+        <SlotHighlight index={number - 1} hover={hover} reduceMotion={reduceMotion}>
+          {children ?? (
+            <View style={styles.empty}>
+              {emptyLabel ? (
+                <AppText variant="caption" color="textMuted">
+                  {emptyLabel}
+                </AppText>
+              ) : null}
+            </View>
+          )}
+        </SlotHighlight>
       </View>
     </View>
   );

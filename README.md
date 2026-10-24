@@ -50,7 +50,7 @@ npm run web       # browser preview (development aid only)
 The scripts use port **8082** so Suna can run next to another Expo project on
 the default 8081. Override with `npx expo start --port <port>` if needed.
 
-Phases 0–2 run in **Expo Go**: every native module used ships with Expo Go
+Phases 0–3 run in **Expo Go** (including `expo-audio` and `expo-haptics`): every native module used ships with Expo Go
 (the Amiri Quran font is a bundled asset loaded with expo-font).
 
 ### When a development build becomes necessary

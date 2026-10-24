@@ -1,75 +1,119 @@
-import { useRef, type ComponentRef } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useEffect, useRef, type ComponentRef } from 'react';
+import { Pressable, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, {
+  LinearTransition,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withSpring,
+  withTiming,
+  ZoomIn,
+} from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { borders, colors, minTapTarget, motion, radius, spacing } from '@/theme';
+import { motion } from '@/theme';
 
-import { QuranText } from './QuranText';
+import type { DragController } from './drag';
+import { resolveDropSlot } from './dropTargets';
+import { PieceFace, type PieceTone, type PieceVariant } from './PieceFace';
 
-export interface DropPoint {
+export type { PieceTone } from './PieceFace';
+
+export interface CardFrame {
   x: number;
   y: number;
+  width: number;
+  height: number;
 }
-
-export type PieceCardTone = 'default' | 'locked' | 'flagged';
 
 interface PieceCardProps {
   text: string;
   /** A whole ayah (full-width card) or a single word (compact chip). */
-  variant?: 'ayah' | 'word';
-  tone?: PieceCardTone;
+  variant?: PieceVariant;
+  tone?: PieceTone;
   disabled?: boolean;
+  /** Hidden while its floating copy is being dragged. */
+  hidden?: boolean;
   reduceMotion?: boolean;
+  /** Changes to this number shake the card (a gentle "not yet"). */
+  shakeKey?: number;
+  /** When set, the card bounces once after this delay (ms) to celebrate. */
+  celebrateDelay?: number | null;
   accessibilityLabel: string;
   accessibilityHint?: string;
   onPress: () => void;
-  onDragStart?: () => void;
-  /** Called with the card's centre in window coordinates where it was released. */
-  onDrop?: (point: DropPoint) => void;
+  drag?: DragController;
+  /** Called on the JS thread once the drag starts, with the card's window frame. */
+  onDragStart?: (frame: CardFrame) => void;
+  /** Called on release; the finger's last position is `drag.px/py`. */
+  onDragEnd?: (canceled: boolean) => void;
 }
 
 /**
- * One puzzle piece: an ayah card or a word chip. Tap is the primary, accessible interaction; press-and-hold
- * then drag is the alternative. Drag motion runs on the UI thread through
- * shared values, and only the start and drop touch React.
+ * One puzzle piece. Dragging is the main interaction and starts as soon as
+ * the finger moves; a floating copy (DragGhost) follows the finger above all
+ * scroll views while the slot under it lights up. Tap-to-place stays as the
+ * accessible alternative. Per-frame motion runs on the UI thread.
  */
 export function PieceCard({
   text,
   variant = 'ayah',
   tone = 'default',
   disabled = false,
+  hidden = false,
   reduceMotion = false,
+  shakeKey = 0,
+  celebrateDelay = null,
   accessibilityLabel,
   accessibilityHint,
   onPress,
+  drag,
   onDragStart,
-  onDrop,
+  onDragEnd,
 }: PieceCardProps) {
   const viewRef = useRef<ComponentRef<typeof View>>(null);
-  const startCenter = useRef<DropPoint | null>(null);
   // A release after a drag must not also count as a tap.
   const dragging = useRef(false);
   const lastDragEndAt = useRef(0);
-  const tx = useSharedValue(0);
-  const ty = useSharedValue(0);
-  const lifted = useSharedValue(0);
+  const shakeX = useSharedValue(0);
+  const bounce = useSharedValue(1);
+
+  useEffect(() => {
+    if (shakeKey === 0 || reduceMotion) return;
+    shakeX.set(
+      withSequence(
+        withTiming(-6, { duration: 50 }),
+        withTiming(6, { duration: 70 }),
+        withTiming(-4, { duration: 60 }),
+        withTiming(4, { duration: 60 }),
+        withTiming(0, { duration: 50 }),
+      ),
+    );
+  }, [shakeKey, reduceMotion, shakeX]);
+
+  useEffect(() => {
+    if (celebrateDelay === null || reduceMotion) return;
+    bounce.set(
+      withDelay(
+        celebrateDelay,
+        withSequence(withTiming(1.15, { duration: 140 }), withSpring(1, motion.snapSpring)),
+      ),
+    );
+  }, [celebrateDelay, reduceMotion, bounce]);
 
   const handleActivate = () => {
     dragging.current = true;
-    startCenter.current = null;
     viewRef.current?.measureInWindow((x, y, width, height) => {
-      startCenter.current = { x: x + width / 2, y: y + height / 2 };
+      onDragStart?.({ x, y, width, height });
     });
-    onDragStart?.();
   };
 
-  const handleRelease = (dx: number, dy: number, canceled: boolean) => {
+  const handleRelease = (canceled: boolean) => {
     dragging.current = false;
     lastDragEndAt.current = Date.now();
-    const start = startCenter.current;
-    if (start && !canceled) onDrop?.({ x: start.x + dx, y: start.y + dy });
+    onDragEnd?.(canceled);
   };
 
   const handlePress = () => {
@@ -77,84 +121,67 @@ export function PieceCard({
     onPress();
   };
 
+  // Translation is measured from the finger's position at activation, so
+  // the floating copy and the drop point both follow absolute coordinates.
+  const grabX = useSharedValue(0);
+  const grabY = useSharedValue(0);
+
   const pan = usePanGesture({
-    enabled: !disabled && !!onDrop,
-    activateAfterLongPress: motion.dragActivationMs,
-    onActivate: () => {
+    enabled: !disabled && !!drag,
+    minDistance: motion.dragMinDistance,
+    onActivate: (event) => {
       'worklet';
-      lifted.set(1);
+      if (!drag) return;
+      grabX.set(event.absoluteX);
+      grabY.set(event.absoluteY);
+      drag.px.set(event.absoluteX);
+      drag.py.set(event.absoluteY);
+      drag.tx.set(0);
+      drag.ty.set(0);
       scheduleOnRN(handleActivate);
     },
     onUpdate: (event) => {
       'worklet';
-      tx.set(event.translationX);
-      ty.set(event.translationY);
+      if (!drag) return;
+      drag.px.set(event.absoluteX);
+      drag.py.set(event.absoluteY);
+      drag.tx.set(event.absoluteX - grabX.get());
+      drag.ty.set(event.absoluteY - grabY.get());
+      drag.hover.set(
+        resolveDropSlot(drag.slots.get(), drag.area.get(), event.absoluteX, event.absoluteY),
+      );
     },
     onDeactivate: (event) => {
       'worklet';
-      scheduleOnRN(handleRelease, event.translationX, event.translationY, event.canceled);
-    },
-    onFinalize: () => {
-      'worklet';
-      lifted.set(0);
-      if (reduceMotion) {
-        tx.set(0);
-        ty.set(0);
-      } else {
-        tx.set(withSpring(0));
-        ty.set(withSpring(0));
-      }
+      scheduleOnRN(handleRelease, event.canceled);
     },
   });
 
   const animatedStyle = useAnimatedStyle(() => ({
-    zIndex: lifted.get() ? 10 : 0,
-    transform: [
-      { translateX: tx.get() },
-      { translateY: ty.get() },
-      { scale: lifted.get() ? motion.dragLiftScale : 1 },
-    ],
+    transform: [{ translateX: shakeX.get() }, { scale: bounce.get() }],
   }));
 
   return (
-    <GestureDetector gesture={pan}>
-      <Animated.View ref={viewRef} style={animatedStyle}>
-        <Pressable
-          onPress={handlePress}
-          disabled={disabled}
-          accessibilityRole="button"
-          accessibilityLabel={accessibilityLabel}
-          accessibilityHint={accessibilityHint}
-          accessibilityState={{ disabled }}
-          style={({ pressed }) => [
-            styles.card,
-            variant === 'word' && styles.word,
-            toneStyles[tone],
-            pressed && styles.pressed,
-          ]}
-        >
-          <QuranText size={variant === 'word' ? 'word' : 'card'}>{text}</QuranText>
-        </Pressable>
-      </Animated.View>
-    </GestureDetector>
+    <Animated.View
+      entering={reduceMotion ? undefined : ZoomIn.springify().damping(14)}
+      layout={reduceMotion ? undefined : LinearTransition.springify().damping(18)}
+    >
+      <GestureDetector gesture={pan}>
+        <Animated.View ref={viewRef} style={[animatedStyle, hidden && { opacity: 0.25 }]}>
+          <Pressable
+            onPress={handlePress}
+            disabled={disabled}
+            accessibilityRole="button"
+            accessibilityLabel={accessibilityLabel}
+            accessibilityHint={accessibilityHint}
+            accessibilityState={{ disabled }}
+          >
+            {({ pressed }) => (
+              <PieceFace text={text} variant={variant} tone={tone} pressed={pressed} />
+            )}
+          </Pressable>
+        </Animated.View>
+      </GestureDetector>
+    </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.background,
-    borderRadius: radius.md,
-    borderWidth: borders.thick,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-  },
-  word: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, minWidth: minTapTarget },
-  pressed: { opacity: motion.pressFeedbackOpacity },
-});
-
-const toneStyles = StyleSheet.create({
-  default: {},
-  locked: { borderColor: colors.success, backgroundColor: colors.successSoft },
-  flagged: { borderColor: colors.danger, backgroundColor: colors.dangerSoft },
-});

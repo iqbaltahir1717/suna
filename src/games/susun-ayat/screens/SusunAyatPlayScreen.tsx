@@ -1,17 +1,22 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useMemo, useRef, useState, type ComponentRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { AppText, Button, EmptyState, Screen } from '@/components';
+import { useGameFeedback } from '@/features/feedback/useGameFeedback';
+import { MascotView, type MascotHandle } from '@/features/mascot/MascotView';
 import { useEntitlements } from '@/features/purchases/EntitlementsProvider';
 import { useSettings } from '@/features/settings/SettingsProvider';
-import { colors, spacing } from '@/theme';
+import { borders, colors, motion, spacing } from '@/theme';
 
 import { AnswerSlot } from '../components/AnswerSlot';
-import { PieceCard, type DropPoint, type PieceCardTone } from '../components/PieceCard';
+import { Celebration } from '../components/Celebration';
+import { DragGhost, useDragController, useGhost } from '../components/drag';
+import { resolveDropSlot, type SlotRect } from '../components/dropTargets';
+import { PieceCard, type CardFrame, type PieceTone } from '../components/PieceCard';
 import { ResultsView } from '../components/ResultsView';
 import { WordSlot } from '../components/WordSlot';
 import {
@@ -36,10 +41,10 @@ import {
 import { levelTitle } from './levelText';
 import { usePlaySession } from './usePlaySession';
 
-type SlotView = ComponentRef<typeof View>;
+type MeasurableView = ComponentRef<typeof View>;
 type Rect = { x: number; y: number; width: number; height: number };
 
-function measure(view: SlotView | null): Promise<Rect | null> {
+function measure(view: MeasurableView | null): Promise<Rect | null> {
   return new Promise((resolve) => {
     if (!view) return resolve(null);
     view.measureInWindow((x, y, width, height) => resolve({ x, y, width, height }));
@@ -83,8 +88,11 @@ function PlayLevel({ levelId }: { levelId: string }) {
   const router = useRouter();
   const { reduceMotion } = useSettings();
   const { has } = useEntitlements();
+  const { height: windowHeight } = useWindowDimensions();
   const session = usePlaySession(level);
+  const feedback = useGameFeedback();
   const isWords = level.puzzleType === 'orderWords';
+  const variant = isWords ? 'word' : 'ayah';
 
   const cards = useMemo(() => buildLevelCards(level), [level]);
   const cardsById = useMemo(
@@ -93,8 +101,22 @@ function PlayLevel({ levelId }: { levelId: string }) {
   );
   const [puzzle, setPuzzle] = useState<PuzzleState>(() => createPuzzle(cards));
   const [message, setMessage] = useState<string | null>(null);
-  const [draggingFromSlot, setDraggingFromSlot] = useState(false);
-  const slotRefs = useRef<(SlotView | null)[]>([]);
+  const [shakeKey, setShakeKey] = useState(0);
+  const [celebrating, setCelebrating] = useState(false);
+  const celebrateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mascot = useRef<MascotHandle>(null);
+  const rootRef = useRef<MeasurableView>(null);
+  const areaRef = useRef<MeasurableView>(null);
+  const slotRefs = useRef<(MeasurableView | null)[]>([]);
+  const drag = useDragController();
+  const ghost = useGhost(drag, reduceMotion);
+
+  useEffect(
+    () => () => {
+      if (celebrateTimer.current) clearTimeout(celebrateTimer.current);
+    },
+    [],
+  );
 
   const title = levelTitle(t, level);
   const passage = useMemo(() => levelPassage(level), [level]);
@@ -111,49 +133,82 @@ function PlayLevel({ levelId }: { levelId: string }) {
     return groups;
   }, [cards, level]);
 
-  const update = useCallback(
-    (next: PuzzleState) => {
-      if (next === puzzle) return;
+  /**
+   * Applies a move. A move that fills the board is checked right away, so
+   * dragging the last card in gives instant feedback without a button.
+   */
+  const apply = (next: PuzzleState, placed: boolean) => {
+    if (next === puzzle) return;
+    if (placed) feedback('place');
+    session.touch({ hintsUsed: next.hintsUsed, mistakes: next.mistakes });
+    if (!isComplete(next)) {
       setPuzzle(next);
       setMessage(null);
-      session.touch({ hintsUsed: next.hintsUsed, mistakes: next.mistakes });
-    },
-    [puzzle, session],
-  );
-
-  const handleCheck = () => {
-    if (!isComplete(puzzle)) {
-      setMessage(t('susunAyatPlay.fillAll'));
       return;
     }
-    const { state, correct } = checkAnswer(puzzle);
+    const { state, correct } = checkAnswer(next);
     setPuzzle(state);
     session.touch({ hintsUsed: state.hintsUsed, mistakes: state.mistakes });
     if (correct) {
+      setMessage(null);
+      setCelebrating(true);
+      feedback('success');
+      mascot.current?.react('happy');
       void session.complete({ hintsUsed: state.hintsUsed, mistakes: state.mistakes });
+      celebrateTimer.current = setTimeout(
+        () => setCelebrating(false),
+        reduceMotion ? motion.celebrateMs / 3 : motion.celebrateMs,
+      );
     } else {
       setMessage(t('susunAyatPlay.tryAgain'));
+      setShakeKey((key) => key + 1);
+      feedback('retry');
+      mascot.current?.react('encourage');
     }
   };
 
-  const handleDrop = async (pieceId: string, point: DropPoint) => {
-    setDraggingFromSlot(false);
-    const rects = await Promise.all(slotRefs.current.map(measure));
-    const target = rects.findIndex(
-      (r) =>
-        r &&
-        point.x >= r.x &&
-        point.x <= r.x + r.width &&
-        point.y >= r.y &&
-        point.y <= r.y + r.height,
+  const handleDragStart = async (pieceId: string, frame: CardFrame) => {
+    feedback('pick');
+    const [root, area, ...slots] = await Promise.all([
+      measure(rootRef.current),
+      measure(areaRef.current),
+      ...puzzle.slots.map((_, i) => measure(slotRefs.current[i] ?? null)),
+    ]);
+    drag.area.set(area);
+    drag.slots.set(
+      slots.map(
+        (rect, i): SlotRect =>
+          rect
+            ? { ...rect, empty: puzzle.slots[i] === null, locked: !!puzzle.lockedSlots[i] }
+            : { x: 0, y: 0, width: 0, height: 0, empty: false, locked: true },
+      ),
     );
-    if (target >= 0) {
-      update(placePiece(puzzle, pieceId, target));
-      return;
-    }
-    // A placed card dropped outside every slot goes back to the pool.
+    ghost.show({
+      pieceId,
+      text: cardsById[pieceId]!.text,
+      variant,
+      left: frame.x - (root?.x ?? 0),
+      top: frame.y - (root?.y ?? 0),
+      width: frame.width,
+    });
+  };
+
+  const handleDragEnd = (pieceId: string, canceled: boolean) => {
+    const x = drag.px.get();
+    const y = drag.py.get();
+    const target =
+      canceled || Number.isNaN(x) ? -1 : resolveDropSlot(drag.slots.get(), drag.area.get(), x, y);
     const from = puzzle.slots.indexOf(pieceId);
-    if (from >= 0) update(returnPiece(puzzle, from));
+    if (target >= 0) {
+      ghost.release(true);
+      apply(placePiece(puzzle, pieceId, target), true);
+    } else if (from >= 0 && !canceled) {
+      // A placed card dragged off the answer area goes back to the bank.
+      ghost.release(true);
+      apply(returnPiece(puzzle, from), false);
+    } else {
+      ghost.release(false);
+    }
   };
 
   const restart = () => {
@@ -162,7 +217,7 @@ function PlayLevel({ levelId }: { levelId: string }) {
     setMessage(null);
   };
 
-  if (puzzle.status === 'solved') {
+  if (puzzle.status === 'solved' && !celebrating) {
     const next = nextLevelId(level.id, (candidate) => canPlayLevel(candidate, has));
     return (
       <>
@@ -180,152 +235,198 @@ function PlayLevel({ levelId }: { levelId: string }) {
   }
 
   const hintsLeft = hintsRemaining(puzzle, level.allowedHints);
+  const interactive = puzzle.status === 'playing';
 
-  const renderPlaced = (index: number) => {
-    const pieceId = puzzle.slots[index];
-    const card = pieceId ? cardsById[pieceId] : undefined;
-    if (!card) return undefined;
-    const locked = puzzle.lockedSlots[index] ?? false;
-    const flagged = puzzle.flaggedSlots.includes(index);
-    const tone: PieceCardTone = locked ? 'locked' : flagged ? 'flagged' : 'default';
+  const renderCard = (pieceId: string, slotIndex: number | null) => {
+    const card = cardsById[pieceId]!;
+    const placed = slotIndex !== null;
+    const locked = placed && (puzzle.lockedSlots[slotIndex] ?? false);
+    const flagged = placed && puzzle.flaggedSlots.includes(slotIndex);
+    const tone: PieceTone = celebrating
+      ? 'success'
+      : locked
+        ? 'locked'
+        : flagged
+          ? 'flagged'
+          : 'default';
     return (
       <PieceCard
+        key={pieceId}
         text={card.text}
-        variant={isWords ? 'word' : 'ayah'}
+        variant={variant}
         tone={tone}
-        disabled={locked}
+        disabled={locked || !interactive}
+        hidden={ghost.ghost?.pieceId === pieceId}
         reduceMotion={reduceMotion}
-        accessibilityLabel={[
-          t('susunAyatPlay.slotLabel', { number: index + 1 }),
-          locked ? t('susunAyatPlay.hintLocked') : null,
-          flagged ? t('susunAyatPlay.wrongMark') : null,
-          card.text,
-        ]
-          .filter(Boolean)
-          .join(', ')}
-        accessibilityHint={t('susunAyatPlay.cardHintPlaced')}
-        onPress={() => update(returnPiece(puzzle, index))}
-        onDragStart={() => setDraggingFromSlot(true)}
-        onDrop={(point) => void handleDrop(card.id, point)}
+        shakeKey={flagged ? shakeKey : 0}
+        celebrateDelay={celebrating && placed ? slotIndex * motion.celebrateStaggerMs : null}
+        accessibilityLabel={
+          placed
+            ? [
+                t('susunAyatPlay.slotLabel', { number: slotIndex + 1 }),
+                locked ? t('susunAyatPlay.hintLocked') : null,
+                flagged ? t('susunAyatPlay.wrongMark') : null,
+                card.text,
+              ]
+                .filter(Boolean)
+                .join(', ')
+            : card.text
+        }
+        accessibilityHint={t(
+          placed ? 'susunAyatPlay.cardHintPlaced' : 'susunAyatPlay.cardHintPool',
+        )}
+        onPress={() =>
+          apply(placed ? returnPiece(puzzle, slotIndex) : placePiece(puzzle, pieceId), !placed)
+        }
+        drag={drag}
+        onDragStart={(frame) => void handleDragStart(pieceId, frame)}
+        onDragEnd={(canceled) => handleDragEnd(pieceId, canceled)}
       />
     );
+  };
+
+  const slotRef = (index: number) => (view: MeasurableView | null) => {
+    slotRefs.current[index] = view;
+  };
+  const placedAt = (index: number) => {
+    const pieceId = puzzle.slots[index];
+    return pieceId ? renderCard(pieceId, index) : undefined;
   };
 
   return (
     <SafeAreaView edges={['bottom', 'left', 'right']} style={styles.safeArea}>
       <Stack.Screen options={{ title }} />
-      <ScrollView contentContainerStyle={styles.content}>
-        <AppText color="textMuted">
-          {t(isWords ? 'susunAyatPlay.instructionsWords' : 'susunAyatPlay.instructions')}
-        </AppText>
-
-        <View style={[styles.slots, draggingFromSlot && styles.raised]}>
-          {isWords
-            ? slotGroups.map((group) => (
-                <View key={group.ayah ?? 'all'} style={styles.group}>
-                  {group.ayah !== null ? (
-                    <AppText variant="label" color="textMuted">
-                      {t('susunAyatPlay.results.ayahNumber', { number: group.ayah })}
-                    </AppText>
-                  ) : null}
-                  <View style={styles.wordRow}>
-                    {group.slots.map((index) => (
-                      <WordSlot
-                        key={index}
-                        number={index + 1}
-                        label={t('susunAyatPlay.slotLabel', { number: index + 1 })}
-                        ref={(view) => {
-                          slotRefs.current[index] = view;
-                        }}
-                      >
-                        {renderPlaced(index)}
-                      </WordSlot>
-                    ))}
-                  </View>
-                </View>
-              ))
-            : puzzle.slots.map((_, index) => (
-                <AnswerSlot
-                  key={index}
-                  number={index + 1}
-                  label={t('susunAyatPlay.slotLabel', { number: index + 1 })}
-                  emptyLabel={
-                    index === puzzle.slots.indexOf(null) ? t('susunAyatPlay.emptySlot') : undefined
-                  }
-                  ref={(view) => {
-                    slotRefs.current[index] = view;
-                  }}
-                >
-                  {renderPlaced(index)}
-                </AnswerSlot>
-              ))}
-        </View>
-
-        {message ? (
-          <AppText
-            variant="caption"
-            color={puzzle.flaggedSlots.length ? 'danger' : 'textMuted'}
-            accessibilityLiveRegion="polite"
-          >
-            {message}
-          </AppText>
-        ) : null}
-
-        <View style={styles.actions}>
-          <Button label={t('susunAyatPlay.check')} onPress={handleCheck} />
-          <Button
-            label={
-              hintsLeft > 0
-                ? t('susunAyatPlay.hint', { count: hintsLeft })
-                : t('susunAyatPlay.noHints')
-            }
-            variant="secondary"
-            disabled={hintsLeft === 0}
-            onPress={() => update(applyHint(puzzle, level.allowedHints))}
-          />
-        </View>
-
-        <View style={styles.pool}>
-          <AppText variant="heading">
-            {t(isWords ? 'susunAyatPlay.poolTitleWords' : 'susunAyatPlay.poolTitle')}
-          </AppText>
-          {puzzle.pool.length === 0 ? (
-            <AppText variant="caption" color="textMuted">
-              {t('susunAyatPlay.poolEmpty')}
+      <View ref={rootRef} style={styles.root}>
+        <ScrollView style={styles.board} contentContainerStyle={styles.boardContent}>
+          <View style={styles.intro}>
+            <MascotView ref={mascot} size={56} reduceMotion={reduceMotion} />
+            <AppText color="textMuted" style={styles.introText}>
+              {t(isWords ? 'susunAyatPlay.instructionsWords' : 'susunAyatPlay.instructions')}
             </AppText>
-          ) : (
-            <View style={isWords ? styles.wordRow : styles.slots}>
-              {puzzle.pool.map((pieceId) => {
-                const card = cardsById[pieceId]!;
-                return (
-                  <PieceCard
-                    key={pieceId}
-                    text={card.text}
-                    variant={isWords ? 'word' : 'ayah'}
+          </View>
+
+          <View ref={areaRef} style={styles.slots}>
+            {isWords
+              ? slotGroups.map((group) => (
+                  <View key={group.ayah ?? 'all'} style={styles.group}>
+                    {group.ayah !== null ? (
+                      <AppText variant="label" color="textMuted">
+                        {t('susunAyatPlay.results.ayahNumber', { number: group.ayah })}
+                      </AppText>
+                    ) : null}
+                    <View style={styles.wordRow}>
+                      {group.slots.map((index) => (
+                        <WordSlot
+                          key={index}
+                          number={index + 1}
+                          label={t('susunAyatPlay.slotLabel', { number: index + 1 })}
+                          hover={drag.hover}
+                          reduceMotion={reduceMotion}
+                          ref={slotRef(index)}
+                        >
+                          {placedAt(index)}
+                        </WordSlot>
+                      ))}
+                    </View>
+                  </View>
+                ))
+              : puzzle.slots.map((_, index) => (
+                  <AnswerSlot
+                    key={index}
+                    number={index + 1}
+                    label={t('susunAyatPlay.slotLabel', { number: index + 1 })}
+                    emptyLabel={
+                      index === puzzle.slots.indexOf(null)
+                        ? t('susunAyatPlay.emptySlot')
+                        : undefined
+                    }
+                    hover={drag.hover}
                     reduceMotion={reduceMotion}
-                    accessibilityLabel={card.text}
-                    accessibilityHint={t('susunAyatPlay.cardHintPool')}
-                    onPress={() => update(placePiece(puzzle, pieceId))}
-                    onDrop={(point) => void handleDrop(pieceId, point)}
-                  />
-                );
-              })}
-            </View>
-          )}
+                    ref={slotRef(index)}
+                  >
+                    {placedAt(index)}
+                  </AnswerSlot>
+                ))}
+          </View>
+
+          {message ? (
+            <AppText
+              variant="caption"
+              color={puzzle.flaggedSlots.length ? 'danger' : 'textMuted'}
+              accessibilityLiveRegion="polite"
+            >
+              {message}
+            </AppText>
+          ) : null}
+          {celebrating ? (
+            <AppText variant="heading" color="primary" accessibilityLiveRegion="polite">
+              {t('susunAyatPlay.results.title')}
+            </AppText>
+          ) : null}
+        </ScrollView>
+
+        <View style={styles.bank}>
+          <View style={styles.bankHeader}>
+            <AppText variant="heading" style={styles.bankTitle}>
+              {t(isWords ? 'susunAyatPlay.poolTitleWords' : 'susunAyatPlay.poolTitle')}
+            </AppText>
+            <Button
+              label={
+                hintsLeft > 0
+                  ? t('susunAyatPlay.hint', { count: hintsLeft })
+                  : t('susunAyatPlay.noHints')
+              }
+              variant="secondary"
+              disabled={hintsLeft === 0 || !interactive}
+              onPress={() => apply(applyHint(puzzle, level.allowedHints), true)}
+            />
+          </View>
+          <ScrollView
+            style={{ maxHeight: windowHeight * 0.38 }}
+            contentContainerStyle={styles.bankContent}
+          >
+            {puzzle.pool.length === 0 ? (
+              <AppText variant="caption" color="textMuted">
+                {t('susunAyatPlay.poolEmpty')}
+              </AppText>
+            ) : (
+              <View style={isWords ? styles.wordRow : styles.slots}>
+                {puzzle.pool.map((pieceId) => renderCard(pieceId, null))}
+              </View>
+            )}
+          </ScrollView>
         </View>
-      </ScrollView>
+
+        <DragGhost ghost={ghost.ghost} drag={drag} reduceMotion={reduceMotion} />
+        {celebrating ? <Celebration reduceMotion={reduceMotion} /> : null}
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.lg },
+  root: { flex: 1 },
+  board: { flex: 1 },
+  boardContent: { padding: spacing.lg, gap: spacing.lg },
+  intro: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  introText: { flex: 1 },
   slots: { gap: spacing.sm },
   group: { gap: spacing.xs },
   // Arabic reads right to left, so word slots and chips flow that way too.
   wordRow: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: spacing.sm },
-  raised: { zIndex: 10 },
-  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  pool: { gap: spacing.sm },
+  bank: {
+    backgroundColor: colors.surface,
+    borderTopWidth: borders.hairline,
+    borderTopColor: colors.border,
+    paddingTop: spacing.md,
+  },
+  bankHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+  },
+  bankTitle: { flex: 1 },
+  bankContent: { padding: spacing.lg, paddingTop: spacing.md },
 });
