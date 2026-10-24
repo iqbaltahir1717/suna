@@ -3,6 +3,7 @@ import { createRef } from 'react';
 import { Pressable, View } from 'react-native';
 
 import { MascotView, type MascotHandle } from '@/features/mascot/MascotView';
+import { SUNA_MASCOT_FLAT } from '@/features/mascot/mascotArtwork';
 
 // The React Native test environment keeps one timer of its own alive, so
 // assertions compare against an identical render without the mascot.
@@ -67,5 +68,24 @@ describe('MascotView', () => {
     await act(async () => {
       jest.advanceTimersByTime(2000);
     });
+  });
+
+  it('runs every reaction on the layered art and settles back to rest', async () => {
+    const ref = createRef<MascotHandle>();
+    await render(<MascotView size={96} ref={ref} />);
+    for (const reaction of ['greet', 'encourage', 'happy', 'tap'] as const) {
+      await act(async () => {
+        ref.current?.react(reaction);
+        jest.advanceTimersByTime(1500);
+      });
+    }
+  });
+
+  it('still supports a flattened artwork', async () => {
+    const ref = createRef<MascotHandle>();
+    const view = await render(<MascotView size={96} ref={ref} artwork={SUNA_MASCOT_FLAT} />);
+    await act(async () => ref.current?.react('happy'));
+    await view.unmount();
+    expect(await pendingTimersAfterSettling()).toBe(baseline);
   });
 });

@@ -1,10 +1,12 @@
-import { useEffect, useImperativeHandle, useState, type Ref } from 'react';
-import { AppState, Image, Pressable, StyleSheet } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { useEffect, useImperativeHandle, useState, type ComponentType, type Ref } from 'react';
+import { AppState, Image, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { type AnimatedStyle } from 'react-native-reanimated';
+import type { ViewStyle } from 'react-native';
 
 import { radius } from '@/theme';
 
 import { SUNA_MASCOT, type MascotArtwork, type MascotReaction } from './mascotArtwork';
+import { ARTBOARD, PIVOTS, SunaLayers } from './sunaMascotLayers';
 import { useMascotController } from './useMascotController';
 
 export interface MascotHandle {
@@ -37,7 +39,7 @@ export function MascotView({
 }: MascotViewProps) {
   const appActive = useAppIsActive();
   const animate = !paused && !reduceMotion && appActive;
-  const { animatedStyle, react } = useMascotController(animate);
+  const { styles: motionStyles, react } = useMascotController(animate);
 
   useImperativeHandle(ref, () => ({ react }), [react]);
 
@@ -50,10 +52,42 @@ export function MascotView({
       accessibilityLabel={accessibilityLabel}
       style={[styles.viewport, { width: size, height }]}
     >
-      <Animated.View style={[styles.fill, styles.origin, animatedStyle]}>
-        <Image source={artwork.source} style={styles.fill} resizeMode="contain" />
-      </Animated.View>
+      {artwork.kind === 'flattened' ? (
+        <Animated.View style={[styles.fill, styles.feetOrigin, motionStyles.character]}>
+          <Image source={artwork.source} style={styles.fill} resizeMode="contain" />
+        </Animated.View>
+      ) : (
+        <View style={styles.fill} pointerEvents="none">
+          <Part Layer={SunaLayers.Shadow} style={motionStyles.shadow} />
+          <Animated.View style={[StyleSheet.absoluteFill, styles.feetOrigin, motionStyles.character]}>
+            <Part Layer={SunaLayers.Legs} />
+            <Part Layer={SunaLayers.ArmLeft} style={[styles.armLeftOrigin, motionStyles.armLeft]} />
+            <Part Layer={SunaLayers.ArmRight} style={[styles.armRightOrigin, motionStyles.armRight]} />
+            <Part Layer={SunaLayers.Body} />
+            <Animated.View style={[StyleSheet.absoluteFill, motionStyles.face]}>
+              <Part Layer={SunaLayers.Cheeks} />
+              <Part Layer={SunaLayers.EyesOpen} style={[styles.eyeOrigin, motionStyles.eyesOpen]} />
+              <Part Layer={SunaLayers.EyesHappy} style={motionStyles.eyesHappy} />
+              <Part Layer={SunaLayers.EyesClosed} style={motionStyles.eyesClosed} />
+              <Part Layer={SunaLayers.MouthSmile} style={motionStyles.mouthSmile} />
+              <Part Layer={SunaLayers.MouthNeutral} style={motionStyles.mouthNeutral} />
+              <Part Layer={SunaLayers.MouthOpen} style={motionStyles.mouthOpen} />
+            </Animated.View>
+          </Animated.View>
+        </View>
+      )}
     </Pressable>
+  );
+}
+
+type PartStyle = AnimatedStyle<ViewStyle> | ViewStyle | (AnimatedStyle<ViewStyle> | ViewStyle)[];
+
+/** One artboard-sized layer; all layers stack at (0,0). */
+function Part({ Layer, style }: { Layer: ComponentType; style?: PartStyle }) {
+  return (
+    <Animated.View style={[StyleSheet.absoluteFill, style]}>
+      <Layer />
+    </Animated.View>
   );
 }
 
@@ -68,11 +102,15 @@ function useAppIsActive() {
   return active;
 }
 
+const pct = (value: number) => `${(value / ARTBOARD) * 100}%`;
+const origin = ({ x, y }: { x: number; y: number }) => `${pct(x)} ${pct(y)}`;
+
 const styles = StyleSheet.create({
-  // The current artwork draws its own rounded frame, so the viewport adds no
-  // background. It is not clipped, so hop/sway never crop the artwork.
+  // The viewport is not clipped, so hops, waves, and sway never crop the art.
   viewport: { borderRadius: radius.lg },
   fill: { width: '100%', height: '100%' },
-  // Sway pivots around the mascot's feet, not its centre.
-  origin: { transformOrigin: '50% 100%' },
+  feetOrigin: { transformOrigin: origin(PIVOTS.feet) },
+  armLeftOrigin: { transformOrigin: origin(PIVOTS.armLeft) },
+  armRightOrigin: { transformOrigin: origin(PIVOTS.armRight) },
+  eyeOrigin: { transformOrigin: origin({ x: PIVOTS.face.x, y: 100 }) },
 });
