@@ -4,7 +4,7 @@ import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { borders, colors, motion, radius, spacing } from '@/theme';
+import { borders, colors, minTapTarget, motion, radius, spacing } from '@/theme';
 
 import { QuranText } from './QuranText';
 
@@ -13,11 +13,13 @@ export interface DropPoint {
   y: number;
 }
 
-export type AyahCardTone = 'default' | 'locked' | 'flagged';
+export type PieceCardTone = 'default' | 'locked' | 'flagged';
 
-interface AyahCardProps {
+interface PieceCardProps {
   text: string;
-  tone?: AyahCardTone;
+  /** A whole ayah (full-width card) or a single word (compact chip). */
+  variant?: 'ayah' | 'word';
+  tone?: PieceCardTone;
   disabled?: boolean;
   reduceMotion?: boolean;
   accessibilityLabel: string;
@@ -29,12 +31,13 @@ interface AyahCardProps {
 }
 
 /**
- * One ayah card. Tap is the primary, accessible interaction; press-and-hold
+ * One puzzle piece: an ayah card or a word chip. Tap is the primary, accessible interaction; press-and-hold
  * then drag is the alternative. Drag motion runs on the UI thread through
  * shared values, and only the start and drop touch React.
  */
-export function AyahCard({
+export function PieceCard({
   text,
+  variant = 'ayah',
   tone = 'default',
   disabled = false,
   reduceMotion = false,
@@ -43,7 +46,7 @@ export function AyahCard({
   onPress,
   onDragStart,
   onDrop,
-}: AyahCardProps) {
+}: PieceCardProps) {
   const viewRef = useRef<ComponentRef<typeof View>>(null);
   const startCenter = useRef<DropPoint | null>(null);
   // A release after a drag must not also count as a tap.
@@ -123,9 +126,14 @@ export function AyahCard({
           accessibilityLabel={accessibilityLabel}
           accessibilityHint={accessibilityHint}
           accessibilityState={{ disabled }}
-          style={({ pressed }) => [styles.card, toneStyles[tone], pressed && styles.pressed]}
+          style={({ pressed }) => [
+            styles.card,
+            variant === 'word' && styles.word,
+            toneStyles[tone],
+            pressed && styles.pressed,
+          ]}
         >
-          <QuranText>{text}</QuranText>
+          <QuranText size={variant === 'word' ? 'word' : 'card'}>{text}</QuranText>
         </Pressable>
       </Animated.View>
     </GestureDetector>
@@ -141,6 +149,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
   },
+  word: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, minWidth: minTapTarget },
   pressed: { opacity: motion.pressFeedbackOpacity },
 });
 

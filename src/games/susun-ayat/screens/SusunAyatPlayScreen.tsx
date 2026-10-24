@@ -6,13 +6,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { AppText, Button, EmptyState, Screen } from '@/components';
+import { useEntitlements } from '@/features/purchases/EntitlementsProvider';
 import { useSettings } from '@/features/settings/SettingsProvider';
 import { colors, spacing } from '@/theme';
 
 import { AnswerSlot } from '../components/AnswerSlot';
-import { AyahCard, type DropPoint } from '../components/AyahCard';
+import { PieceCard, type DropPoint, type PieceCardTone } from '../components/PieceCard';
 import { ResultsView } from '../components/ResultsView';
-import { buildLevelCards, getLevel, nextLevelId, SURAH_NAMES, type LevelCard } from '../content';
+import { WordSlot } from '../components/WordSlot';
+import {
+  buildLevelCards,
+  canPlayLevel,
+  getLevel,
+  levelPassage,
+  nextLevelId,
+  showsAyahBreaks,
+  type LevelCard,
+} from '../content';
 import {
   applyHint,
   checkAnswer,
@@ -23,6 +33,7 @@ import {
   returnPiece,
   type PuzzleState,
 } from '../engine';
+import { levelTitle } from './levelText';
 import { usePlaySession } from './usePlaySession';
 
 type SlotView = ComponentRef<typeof View>;
@@ -39,11 +50,27 @@ export function SusunAyatPlayScreen() {
   const { levelId } = useLocalSearchParams<{ levelId: string }>();
   const level = getLevel(levelId);
   const { t } = useTranslation();
+  const router = useRouter();
+  const { has } = useEntitlements();
 
   if (!level) {
     return (
       <Screen edges={['bottom', 'left', 'right']}>
         <EmptyState icon="alert-circle-outline" title={t('susunAyatPlay.unknownLevel')} body="" />
+      </Screen>
+    );
+  }
+  if (!canPlayLevel(level, has)) {
+    return (
+      <Screen edges={['bottom', 'left', 'right']}>
+        <Stack.Screen options={{ title: levelTitle(t, level) }} />
+        <EmptyState
+          icon="lock-closed-outline"
+          title={t('susunAyatPlay.lockedTitle')}
+          body={t('susunAyatPlay.lockedBody')}
+        >
+          <Button label={t('premium.title')} onPress={() => router.push('/premium')} />
+        </EmptyState>
       </Screen>
     );
   }
@@ -55,7 +82,9 @@ function PlayLevel({ levelId }: { levelId: string }) {
   const { t } = useTranslation();
   const router = useRouter();
   const { reduceMotion } = useSettings();
+  const { has } = useEntitlements();
   const session = usePlaySession(level);
+  const isWords = level.puzzleType === 'orderWords';
 
   const cards = useMemo(() => buildLevelCards(level), [level]);
   const cardsById = useMemo(
@@ -67,11 +96,20 @@ function PlayLevel({ levelId }: { levelId: string }) {
   const [draggingFromSlot, setDraggingFromSlot] = useState(false);
   const slotRefs = useRef<(SlotView | null)[]>([]);
 
-  const title = t('susunAyatEntry.levelTitle', {
-    surah: SURAH_NAMES[level.surah],
-    from: level.ayahRange.from,
-    to: level.ayahRange.to,
-  });
+  const title = levelTitle(t, level);
+  const passage = useMemo(() => levelPassage(level), [level]);
+  // Word puzzles: slot indexes grouped per ayah when the difficulty shows
+  // ayah breaks, otherwise one continuous group.
+  const slotGroups = useMemo(() => {
+    if (!showsAyahBreaks(level)) return [{ ayah: null, slots: cards.map((_, i) => i) }];
+    const groups: { ayah: number | null; slots: number[] }[] = [];
+    cards.forEach((card, i) => {
+      const last = groups.at(-1);
+      if (last?.ayah === card.ref.ayah) last.slots.push(i);
+      else groups.push({ ayah: card.ref.ayah, slots: [i] });
+    });
+    return groups;
+  }, [cards, level]);
 
   const update = useCallback(
     (next: PuzzleState) => {
@@ -125,12 +163,12 @@ function PlayLevel({ levelId }: { levelId: string }) {
   };
 
   if (puzzle.status === 'solved') {
-    const next = nextLevelId(level.id);
+    const next = nextLevelId(level.id, (candidate) => canPlayLevel(candidate, has));
     return (
       <>
         <Stack.Screen options={{ title }} />
         <ResultsView
-          cards={cards}
+          passage={passage}
           hintsUsed={puzzle.hintsUsed}
           reduceMotion={reduceMotion}
           onNext={next ? () => router.replace(`/games/susun-ayat/${next}`) : undefined}
@@ -143,52 +181,84 @@ function PlayLevel({ levelId }: { levelId: string }) {
 
   const hintsLeft = hintsRemaining(puzzle, level.allowedHints);
 
+  const renderPlaced = (index: number) => {
+    const pieceId = puzzle.slots[index];
+    const card = pieceId ? cardsById[pieceId] : undefined;
+    if (!card) return undefined;
+    const locked = puzzle.lockedSlots[index] ?? false;
+    const flagged = puzzle.flaggedSlots.includes(index);
+    const tone: PieceCardTone = locked ? 'locked' : flagged ? 'flagged' : 'default';
+    return (
+      <PieceCard
+        text={card.text}
+        variant={isWords ? 'word' : 'ayah'}
+        tone={tone}
+        disabled={locked}
+        reduceMotion={reduceMotion}
+        accessibilityLabel={[
+          t('susunAyatPlay.slotLabel', { number: index + 1 }),
+          locked ? t('susunAyatPlay.hintLocked') : null,
+          flagged ? t('susunAyatPlay.wrongMark') : null,
+          card.text,
+        ]
+          .filter(Boolean)
+          .join(', ')}
+        accessibilityHint={t('susunAyatPlay.cardHintPlaced')}
+        onPress={() => update(returnPiece(puzzle, index))}
+        onDragStart={() => setDraggingFromSlot(true)}
+        onDrop={(point) => void handleDrop(card.id, point)}
+      />
+    );
+  };
+
   return (
     <SafeAreaView edges={['bottom', 'left', 'right']} style={styles.safeArea}>
       <Stack.Screen options={{ title }} />
       <ScrollView contentContainerStyle={styles.content}>
-        <AppText color="textMuted">{t('susunAyatPlay.instructions')}</AppText>
+        <AppText color="textMuted">
+          {t(isWords ? 'susunAyatPlay.instructionsWords' : 'susunAyatPlay.instructions')}
+        </AppText>
 
         <View style={[styles.slots, draggingFromSlot && styles.raised]}>
-          {puzzle.slots.map((pieceId, index) => {
-            const card = pieceId ? cardsById[pieceId] : undefined;
-            const locked = puzzle.lockedSlots[index] ?? false;
-            const flagged = puzzle.flaggedSlots.includes(index);
-            return (
-              <AnswerSlot
-                key={index}
-                number={index + 1}
-                label={t('susunAyatPlay.slotLabel', { number: index + 1 })}
-                emptyLabel={
-                  index === puzzle.slots.indexOf(null) ? t('susunAyatPlay.emptySlot') : undefined
-                }
-                ref={(view) => {
-                  slotRefs.current[index] = view;
-                }}
-              >
-                {card ? (
-                  <AyahCard
-                    text={card.text}
-                    tone={locked ? 'locked' : flagged ? 'flagged' : 'default'}
-                    disabled={locked}
-                    reduceMotion={reduceMotion}
-                    accessibilityLabel={[
-                      t('susunAyatPlay.slotLabel', { number: index + 1 }),
-                      locked ? t('susunAyatPlay.hintLocked') : null,
-                      flagged ? t('susunAyatPlay.wrongMark') : null,
-                      card.text,
-                    ]
-                      .filter(Boolean)
-                      .join(', ')}
-                    accessibilityHint={t('susunAyatPlay.cardHintPlaced')}
-                    onPress={() => update(returnPiece(puzzle, index))}
-                    onDragStart={() => setDraggingFromSlot(true)}
-                    onDrop={(point) => void handleDrop(card.id, point)}
-                  />
-                ) : undefined}
-              </AnswerSlot>
-            );
-          })}
+          {isWords
+            ? slotGroups.map((group) => (
+                <View key={group.ayah ?? 'all'} style={styles.group}>
+                  {group.ayah !== null ? (
+                    <AppText variant="label" color="textMuted">
+                      {t('susunAyatPlay.results.ayahNumber', { number: group.ayah })}
+                    </AppText>
+                  ) : null}
+                  <View style={styles.wordRow}>
+                    {group.slots.map((index) => (
+                      <WordSlot
+                        key={index}
+                        number={index + 1}
+                        label={t('susunAyatPlay.slotLabel', { number: index + 1 })}
+                        ref={(view) => {
+                          slotRefs.current[index] = view;
+                        }}
+                      >
+                        {renderPlaced(index)}
+                      </WordSlot>
+                    ))}
+                  </View>
+                </View>
+              ))
+            : puzzle.slots.map((_, index) => (
+                <AnswerSlot
+                  key={index}
+                  number={index + 1}
+                  label={t('susunAyatPlay.slotLabel', { number: index + 1 })}
+                  emptyLabel={
+                    index === puzzle.slots.indexOf(null) ? t('susunAyatPlay.emptySlot') : undefined
+                  }
+                  ref={(view) => {
+                    slotRefs.current[index] = view;
+                  }}
+                >
+                  {renderPlaced(index)}
+                </AnswerSlot>
+              ))}
         </View>
 
         {message ? (
@@ -216,26 +286,31 @@ function PlayLevel({ levelId }: { levelId: string }) {
         </View>
 
         <View style={styles.pool}>
-          <AppText variant="heading">{t('susunAyatPlay.poolTitle')}</AppText>
+          <AppText variant="heading">
+            {t(isWords ? 'susunAyatPlay.poolTitleWords' : 'susunAyatPlay.poolTitle')}
+          </AppText>
           {puzzle.pool.length === 0 ? (
             <AppText variant="caption" color="textMuted">
               {t('susunAyatPlay.poolEmpty')}
             </AppText>
           ) : (
-            puzzle.pool.map((pieceId) => {
-              const card = cardsById[pieceId]!;
-              return (
-                <AyahCard
-                  key={pieceId}
-                  text={card.text}
-                  reduceMotion={reduceMotion}
-                  accessibilityLabel={card.text}
-                  accessibilityHint={t('susunAyatPlay.cardHintPool')}
-                  onPress={() => update(placePiece(puzzle, pieceId))}
-                  onDrop={(point) => void handleDrop(pieceId, point)}
-                />
-              );
-            })
+            <View style={isWords ? styles.wordRow : styles.slots}>
+              {puzzle.pool.map((pieceId) => {
+                const card = cardsById[pieceId]!;
+                return (
+                  <PieceCard
+                    key={pieceId}
+                    text={card.text}
+                    variant={isWords ? 'word' : 'ayah'}
+                    reduceMotion={reduceMotion}
+                    accessibilityLabel={card.text}
+                    accessibilityHint={t('susunAyatPlay.cardHintPool')}
+                    onPress={() => update(placePiece(puzzle, pieceId))}
+                    onDrop={(point) => void handleDrop(pieceId, point)}
+                  />
+                );
+              })}
+            </View>
           )}
         </View>
       </ScrollView>
@@ -247,6 +322,9 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.lg },
   slots: { gap: spacing.sm },
+  group: { gap: spacing.xs },
+  // Arabic reads right to left, so word slots and chips flow that way too.
+  wordRow: { flexDirection: 'row-reverse', flexWrap: 'wrap', gap: spacing.sm },
   raised: { zIndex: 10 },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   pool: { gap: spacing.sm },

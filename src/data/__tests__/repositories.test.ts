@@ -100,6 +100,67 @@ describe('progress repository: completed challenges', () => {
   });
 });
 
+describe('progress repository: game statistics', () => {
+  const session = (
+    levelId: string | null,
+    startedAt: number,
+    completed: boolean,
+    hintsUsed = 0,
+  ) => ({
+    gameId: 'susun-ayat',
+    levelId,
+    contentVersion: 'v1',
+    startedAt,
+    endedAt: completed ? startedAt + 1000 : null,
+    completed,
+    hintsUsed,
+    mistakes: 0,
+  });
+
+  it('is empty for a new user', async () => {
+    const repo = createProgressRepository(await setup());
+    expect(await repo.getGameStats('susun-ayat')).toEqual({
+      levels: {},
+      activeDays: 0,
+      recent: [],
+    });
+  });
+
+  it('aggregates attempts, completions, best hints, and active days', async () => {
+    const repo = createProgressRepository(await setup());
+    const day = 24 * 60 * 60 * 1000;
+    const t0 = new Date(2026, 9, 20, 12).getTime();
+    await repo.recordSession(session('lvl-1', t0, false, 1));
+    await repo.recordSession(session('lvl-1', t0 + 1000, true, 2));
+    await repo.recordSession(session('lvl-1', t0 + day, true, 0));
+    await repo.recordSession(session('lvl-2', t0 + 3 * day, false));
+    await repo.recordSession({ ...session('lvl-9', t0, true), gameId: 'other-game' });
+
+    const stats = await repo.getGameStats('susun-ayat', 2);
+    expect(stats.levels).toEqual({
+      'lvl-1': {
+        levelId: 'lvl-1',
+        attempts: 3,
+        completions: 2,
+        bestHintsUsed: 0,
+        lastPlayedAt: t0 + day,
+      },
+      'lvl-2': {
+        levelId: 'lvl-2',
+        attempts: 1,
+        completions: 0,
+        bestHintsUsed: null,
+        lastPlayedAt: t0 + 3 * day,
+      },
+    });
+    expect(stats.activeDays).toBe(3);
+    expect(stats.recent).toEqual([
+      { levelId: 'lvl-2', startedAt: t0 + 3 * day, completed: false, hintsUsed: 0 },
+      { levelId: 'lvl-1', startedAt: t0 + day, completed: true, hintsUsed: 0 },
+    ]);
+  });
+});
+
 describe('notifications repository', () => {
   it('starts empty and tracks unread items', async () => {
     const db = await setup();

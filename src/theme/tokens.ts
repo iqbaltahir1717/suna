@@ -68,6 +68,7 @@ export type TypographyVariant = keyof typeof typography;
 export const quranTypography = {
   fontFamily: 'AmiriQuran_400Regular',
   card: { fontSize: 24, lineHeight: 48 },
+  word: { fontSize: 24, lineHeight: 44 },
   passage: { fontSize: 26, lineHeight: 54 },
 } as const;
 

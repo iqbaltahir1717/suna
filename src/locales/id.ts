@@ -39,8 +39,7 @@ const id = {
     lastActivity: 'Aktivitas terakhir',
     never: 'Belum ada',
     emptyTitle: 'Belum ada aktivitas',
-    emptyBody:
-      'Angka di sini akan terisi setelah kamu bermain. Permainan pertama, Susun Ayat, sedang disiapkan.',
+    emptyBody: 'Angka di sini akan terisi setelah kamu bermain. Mulai dengan Susun Ayat di bawah.',
   },
   games: {
     open: 'Lihat',
@@ -51,16 +50,40 @@ const id = {
     },
     susunAyat: {
       title: 'Susun Ayat',
-      description: 'Susun potongan ayat Al-Qur’an ke urutan yang benar.',
+      description: 'Susun ayat dan kata Al-Qur’an ke urutan yang benar.',
     },
   },
   susunAyatEntry: {
     intro:
-      'Susun ayat-ayat utuh ke urutan yang benar. Ketuk kartu untuk menempatkannya, atau tahan lalu seret. Tidak ada batas waktu.',
+      'Susun ayat utuh, atau kata-kata dalam satu ayat, ke urutan yang benar. Ketuk kartu untuk menempatkannya, atau tahan lalu seret. Tidak ada batas waktu.',
     challengesTitle: 'Tantangan',
     levelTitle: '{{surah}} · ayat {{from}}–{{to}}',
+    levelTitleWords: '{{surah}} · kata ayat {{from}}–{{to}}',
+    levelTitleWordsOne: '{{surah}} · kata ayat {{ayah}}',
     ayahCount: '{{count}} ayat',
+    wordCount_one: '{{count}} kata',
+    wordCount_other: '{{count}} kata',
     completed: 'Selesai',
+    completedTimes_one: 'Selesai',
+    completedTimes_other: 'Selesai {{count}}×',
+    noHintsBadge: 'Tanpa petunjuk',
+    mode: {
+      orderAyat: 'Susun ayat',
+      orderWords: 'Susun kata',
+    },
+    difficultyTitle: 'Tingkat kesulitan',
+    all: 'Semua',
+    difficultyRule: {
+      beginner: 'Pemula: 2–4 kartu dan petunjuk paling banyak. Label masih sementara.',
+      medium: 'Menengah: 4–7 kartu. Label masih sementara.',
+      hard: 'Sulit: 8–12 kata, petunjuk lebih sedikit. Label masih sementara.',
+      expert:
+        'Ahli: 13 kata atau lebih dari beberapa ayat, tanpa pemisah ayat. Label masih sementara.',
+    },
+    practiceTitle: 'Latihan acak',
+    practiceBody:
+      'Membuka tantangan acak sesuai tingkat yang dipilih, mendahulukan yang belum kamu selesaikan.',
+    practice: 'Mulai latihan',
     play: 'Mainkan',
     playAgain: 'Main lagi',
     locked: 'Terkunci (premium)',
@@ -80,10 +103,14 @@ const id = {
     note: 'Menyelesaikan teka-teki tidak otomatis menandai ayat sebagai hafal.',
   },
   susunAyatPlay: {
+    instructionsWords: 'Susun kata dari kanan ke kiri, sesuai arah baca tulisan Arab.',
+    lockedTitle: 'Tantangan ini bagian dari premium',
+    lockedBody: 'Tantangan pengenalan gratis tetap terbuka. Pembelian belum tersedia di versi ini.',
     instructions: 'Susun ayat dari atas ke bawah sesuai urutannya.',
     slotLabel: 'Urutan {{number}}',
     emptySlot: 'Ketuk kartu di bawah untuk mengisi',
     poolTitle: 'Kartu ayat',
+    poolTitleWords: 'Kartu kata',
     poolEmpty: 'Semua kartu sudah ditempatkan.',
     check: 'Periksa',
     hint: 'Petunjuk ({{count}})',
@@ -133,6 +160,20 @@ const id = {
     hafalanTitle: 'Hafalan (dicatat sendiri)',
     hafalanCaption:
       'Hafalan hanya berubah jika kamu mencatatnya sendiri. Skor permainan tidak memengaruhinya.',
+    susunAyat: {
+      completed: '{{completed}} dari {{total}} tantangan selesai',
+      attempts: 'Percobaan',
+      finished: 'Percobaan selesai',
+      noHints: 'Selesai tanpa petunjuk',
+      activeDays: 'Hari aktif',
+      byDifficulty: 'Per tingkat kesulitan',
+      byMode: 'Per mode',
+      recent: 'Percobaan terakhir',
+      recentEmpty: 'Belum ada percobaan.',
+      removedLevel: 'Tantangan sudah tidak tersedia',
+      statusDone: 'selesai',
+      statusLeft: 'belum selesai',
+    },
     hafalanEmpty: 'Belum ada catatan hafalan.',
   },
   profile: {
@@ -165,6 +206,8 @@ const id = {
     intro:
       'Suna bisa dimainkan gratis. Paket premium adalah pembelian satu kali yang membuka fitur berikut.',
     includesTitle: 'Termasuk',
+    susunAyatContents:
+      'Saat ini: {{premium}} tantangan premium dari {{premiumSurahs}} surah. {{free}} tantangan pengenalan tetap gratis.',
     excludesTitle: 'Tidak termasuk',
     features: {
       hafalan_tracker: {

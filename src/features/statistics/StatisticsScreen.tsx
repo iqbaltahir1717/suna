@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AppText, Screen, Section } from '@/components';
 import { HafalanAccessCard } from '@/features/hafalan/HafalanAccessCard';
+import { SusunAyatStatsCard } from '@/games/susun-ayat/components/SusunAyatStatsCard';
 
 import { ActivitySummaryCard } from './ActivitySummaryCard';
 
@@ -21,6 +22,9 @@ export function StatisticsScreen() {
           {t('statistics.gameCaption')}
         </AppText>
         <ActivitySummaryCard />
+      </Section>
+      <Section title={t('games.susunAyat.title')}>
+        <SusunAyatStatsCard />
       </Section>
       <Section title={t('statistics.hafalanTitle')}>
         <AppText variant="caption" color="textMuted">

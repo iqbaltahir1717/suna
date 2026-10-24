@@ -11,7 +11,7 @@ export function QuranText({
   size = 'card',
   style,
   ...rest
-}: TextProps & { children: string; size?: 'card' | 'passage' }) {
+}: TextProps & { children: string; size?: 'card' | 'word' | 'passage' }) {
   return (
     <Text {...rest} style={[styles.base, quranTypography[size], style]}>
       {children}

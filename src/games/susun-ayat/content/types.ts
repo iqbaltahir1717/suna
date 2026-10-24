@@ -1,5 +1,5 @@
 /**
- * Level definition contract for Phase 2+. No Quran text is bundled yet.
+ * Level definition contract.
  *
  * Content rules (see AGENTS.md): Quran text comes only from a verified,
  * licensed source with preserved version metadata, and every level is
@@ -9,12 +9,26 @@ export type PuzzleType = 'orderAyat' | 'orderWords';
 export type Difficulty = 'beginner' | 'medium' | 'hard' | 'expert';
 
 export const DIFFICULTIES: readonly Difficulty[] = ['beginner', 'medium', 'hard', 'expert'];
+export const PUZZLE_TYPES: readonly PuzzleType[] = ['orderAyat', 'orderWords'];
 
 export interface SourceReference {
   surah: number;
   ayah: number;
-  /** Word index within the ayah, for `orderWords` puzzles. */
+  /** 1-based word index within the ayah, for `orderWords` puzzles. */
   word?: number;
+}
+
+/**
+ * What a difficulty means. Difficulty is independent of which surah is
+ * chosen; these rules are the single place to tune it.
+ */
+export interface DifficultyRule {
+  /** Inclusive bounds on the number of pieces (ayat or words) in a level. */
+  pieces: { min: number; max: number };
+  /** Hints allowed per piece; a level always gets at least one hint. */
+  hintsPerPiece: number;
+  /** Word puzzles spanning several ayat show where each ayah starts. */
+  showAyahBreaks: boolean;
 }
 
 export interface LevelDefinition {

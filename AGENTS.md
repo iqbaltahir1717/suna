@@ -45,8 +45,15 @@ and do not build beyond it without instruction.
 - Level ids are permanent once shipped (progress rows key on them). Bump
   `CONTENT_VERSION` when levels or text change. Keep `CONTENT_REVIEW_STATUS`
   at `pending` until a qualified reviewer signs off (see CONTENT.md).
-- Validation compares card text, not card identity, so identical ayat are
-  interchangeable.
+- Validation compares card text, not card identity, so identical ayat or
+  words are interchangeable.
+- Word puzzles split the verbatim ayah at U+0020 only (`segmentAyah`); the
+  words joined with one space must equal the source text. Never normalize,
+  merge, or drop characters. Text with standalone pause marks is refused
+  until a reviewed rule exists.
+- Difficulty is defined once, in `DIFFICULTY_RULES` (`content/levels.ts`);
+  a test checks every level against it. The free introductory set is
+  `FREE_SURAHS`.
 
 ## Premium
 

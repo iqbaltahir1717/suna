@@ -32,10 +32,38 @@ export interface ChallengeCompletion {
   completionCount: number;
 }
 
+/** Per-level aggregates over all recorded attempts. */
+export interface LevelStats {
+  levelId: string;
+  /** Recorded attempts, finished or abandoned. */
+  attempts: number;
+  completions: number;
+  /** Fewest hints used in a completed attempt; null if never completed. */
+  bestHintsUsed: number | null;
+  lastPlayedAt: number;
+}
+
+export interface RecentSession {
+  levelId: string | null;
+  startedAt: number;
+  completed: boolean;
+  hintsUsed: number;
+}
+
+export interface GameStats {
+  levels: Record<string, LevelStats>;
+  /** Distinct local calendar days with at least one attempt. */
+  activeDays: number;
+  /** Most recent attempts first. */
+  recent: RecentSession[];
+}
+
 export interface ProgressRepository {
   getActivitySummary(): Promise<ActivitySummary>;
   /** Completed levels of one game, keyed by level id. */
   listCompletedChallenges(gameId: string): Promise<Record<string, ChallengeCompletion>>;
+  /** Real per-level statistics of one game, from recorded sessions. */
+  getGameStats(gameId: string, recentLimit?: number): Promise<GameStats>;
   /** Records one finished or abandoned play session. Returns its row id. */
   recordSession(session: SessionRecord): Promise<number>;
   /** Upserts per-level completion. Called by a game after validation succeeds. */
@@ -87,6 +115,65 @@ export function createProgressRepository(db: SqlDatabase): ProgressRepository {
           },
         ]),
       );
+    },
+
+    async getGameStats(gameId, recentLimit = 5) {
+      const [levels, days, recent] = await Promise.all([
+        db.getAllAsync<{
+          level_id: string;
+          attempts: number;
+          completions: number;
+          best_hints: number | null;
+          last_played: number;
+        }>(
+          `SELECT level_id,
+                  COUNT(*) AS attempts,
+                  SUM(completed) AS completions,
+                  MIN(CASE WHEN completed = 1 THEN hints_used END) AS best_hints,
+                  MAX(started_at) AS last_played
+           FROM game_sessions
+           WHERE game_id = ? AND level_id IS NOT NULL
+           GROUP BY level_id`,
+          gameId,
+        ),
+        db.getFirstAsync<{ n: number }>(
+          `SELECT COUNT(DISTINCT date(started_at / 1000, 'unixepoch', 'localtime')) AS n
+           FROM game_sessions WHERE game_id = ?`,
+          gameId,
+        ),
+        db.getAllAsync<{
+          level_id: string | null;
+          started_at: number;
+          completed: number;
+          hints_used: number;
+        }>(
+          `SELECT level_id, started_at, completed, hints_used FROM game_sessions
+           WHERE game_id = ? ORDER BY started_at DESC, id DESC LIMIT ?`,
+          gameId,
+          recentLimit,
+        ),
+      ]);
+      return {
+        levels: Object.fromEntries(
+          levels.map((row) => [
+            row.level_id,
+            {
+              levelId: row.level_id,
+              attempts: row.attempts,
+              completions: row.completions,
+              bestHintsUsed: row.best_hints,
+              lastPlayedAt: row.last_played,
+            },
+          ]),
+        ),
+        activeDays: days?.n ?? 0,
+        recent: recent.map((row) => ({
+          levelId: row.level_id,
+          startedAt: row.started_at,
+          completed: row.completed === 1,
+          hintsUsed: row.hints_used,
+        })),
+      };
     },
 
     async recordSession(session) {

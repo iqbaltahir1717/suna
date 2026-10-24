@@ -60,7 +60,7 @@ Unknown keys and invalid values are ignored on load (defaults apply).
 | Interface | Implemented | Used by |
 | --- | --- | --- |
 | `SettingsRepository` (`load`, `save`) | ✅ SQLite | SettingsProvider |
-| `ProgressRepository` (`getActivitySummary`, `listCompletedChallenges`, `recordSession`, `markChallengeCompleted`) | ✅ SQLite | Home and Statistik summary; Susun Ayat writes sessions and completions, and reads completions for the challenge list |
+| `ProgressRepository` (`getActivitySummary`, `getGameStats`, `listCompletedChallenges`, `recordSession`, `markChallengeCompleted`) | ✅ SQLite | Home and Statistik summary; Susun Ayat writes sessions and completions, reads completions and per-level stats for the challenge list, and `getGameStats` for Statistik |
 | `NotificationsRepository` (`list`, `countUnread`, `markRead`) | ✅ SQLite | Notification inbox and header dot |
 | `HafalanRepository` (`list`, `upsert`, `remove`) | ⬜ interface only (`features/hafalan/types.ts`) | Phase 4 |
 
@@ -107,3 +107,19 @@ No code path may derive hafalan status from game results.
 Accounts, sync, and leaderboard (Phase 8, Supabase) will sit behind new
 interfaces. Local SQLite stays the offline source of truth; sync is additive.
 Scores submitted online must be validated server-side.
+
+## Statistics (Phase 3)
+
+`getGameStats(gameId, recentLimit = 5)` reads only `game_sessions`:
+
+- Per level: attempts, completed attempts, fewest hints in a completed
+  attempt (`bestHintsUsed`, null if never completed), last played.
+- Active days: distinct local calendar days with an attempt
+  (`date(started_at / 1000, 'unixepoch', 'localtime')`).
+- Recent attempts, newest first.
+
+`games/susun-ayat/stats.ts` joins these rows with the current level list to
+count completion by difficulty and mode. Rows for removed levels are ignored.
+Word challenges use the same tables; level ids distinguish them. No schema
+change was needed; the database stays at v1.
+
